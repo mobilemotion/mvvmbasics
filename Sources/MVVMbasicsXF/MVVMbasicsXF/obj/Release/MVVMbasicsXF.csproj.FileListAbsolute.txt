@@ -1,0 +1,12 @@
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\bin\Release\MVVMbasicsXF.dll
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\bin\Release\MVVMbasicsXF.pdb
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\bin\Release\MVVMbasics.dll
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\bin\Release\Xamarin.Forms.Core.dll
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\bin\Release\Xamarin.Forms.Xaml.dll
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\bin\Release\MVVMbasics.pdb
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\bin\Release\MVVMbasics.xml
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\bin\Release\Xamarin.Forms.Core.xml
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\bin\Release\Xamarin.Forms.Xaml.xml
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\obj\Release\MVVMbasicsXF.csprojResolveAssemblyReference.cache
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\obj\Release\MVVMbasicsXF.dll
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsXF\MVVMbasicsXF\obj\Release\MVVMbasicsXF.pdb

@@ -1,0 +1,5 @@
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasics\MVVMbasics\bin\Debug\MVVMbasics.dll
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasics\MVVMbasics\bin\Debug\MVVMbasics.pdb
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasics\MVVMbasics\obj\Debug\MVVMbasics.dll
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasics\MVVMbasics\obj\Debug\MVVMbasics.pdb
+C:\_Projekte\MVVMbasics2\Sources\MVVMbasics\MVVMbasics\obj\Debug\MVVMbasics.csprojResolveAssemblyReference.cache

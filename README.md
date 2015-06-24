@@ -1,2 +1,0 @@
-# mvvmbasics
-MVVMbasics

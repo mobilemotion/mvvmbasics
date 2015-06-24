@@ -1,0 +1,1166 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MVVMbasics</name>
+    </assembly>
+    <members>
+        <member name="T:MVVMbasics.Attributes.MvvmBindableAttribute">
+            <summary>
+            Attribute to be applied to Model or Viewmodel properties. All public properties within classes that inherit
+            from <see cref="T:MVVMbasics.Services.Parameter">BaseModel</see> or
+            <see cref="T:MVVMbasics.Services.Parameter">BaseViewmodel</see> which are marked with this attribute will raise
+            the <c>PropertyChanged</c> event after being changed. 
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Attributes.MvvmBindableIgnoreAttribute">
+            <summary>
+            Attribute to be applied to Model or Viewmodel properties. All public properties within classes that are
+            marked with the <see cref="T:MVVMbasics.Services.Parameter">BaseModel</see> or
+            <see cref="T:MVVMbasics.Services.Parameter">BaseViewmodel</see> will not raise the <c>PropertyChanged</c>
+            event after being changed. 
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Attributes.MvvmBindablePropertiesAttribute">
+            <summary>
+            Attribute to be applied to Model or Viewmodel classes which inherit from
+            <see cref="T:MVVMbasics.Services.Parameter">BaseModel</see> or
+            <see cref="T:MVVMbasics.Services.Parameter">BaseViewmodel</see>. All public properties within that class will
+            raise the <c>PropertyChanged</c> event after being changed. 
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Attributes.MvvmCommandAutobindingAttribute">
+            <summary>
+            Attribute to be applied to Viewmodel classes. Define whether CommandAutobinding (the automatic binding of 
+            <see cref="T:MVVMbasics.Commands.BaseCommand">BaseCommands</see> to matching methods in the Viewmodel) is 
+            activated or not.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Attributes.MvvmNavigationTargetAttribute">
+            <summary>
+            Attribute to be applied to View classes. Allows the binding of a given Viewmodel type to this View class.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Attributes.MvvmNavigationTargetAttribute._viewmodel">
+            <summary>
+            Type of the Viewmodel this View class should be bound to.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Attributes.MvvmNavigationTargetAttribute._path">
+            <summary>
+            Path to the XAML file representing this View class. If not specified, the path will be retrieved from the
+            namespace during viewmodel registration.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Attributes.MvvmNavigationTargetAttribute.#ctor(System.Type)">
+            <summary>
+            Constructor that allows to specify Viewmodel. The path to the XAML file representing this View class will
+            be retrieved from the View's namespace.
+            </summary>
+            <param name="viewmodel">Type of the Viewmodel this View class should be bound to (must be a subclass of 
+            <see cref="T:MVVMbasics.Viewmodels.BaseViewmodel">BaseViewmodel</see>.</param>
+        </member>
+        <member name="M:MVVMbasics.Attributes.MvvmNavigationTargetAttribute.#ctor(System.Type,System.String)">
+            <summary>
+            Constructor that allows to specify Viewmodel and path. This constructor should be used, if the path of the
+            XAML file representing this View class does not correspond to the View's namespace.
+            </summary>
+            <param name="viewmodel">Type of the Viewmodel this View class should be bound to.</param>
+            <param name="path">Path to the XAML file representing this View class.</param>
+        </member>
+        <member name="M:MVVMbasics.Attributes.MvvmNavigationTargetAttribute.GetViewmodel">
+            <summary>
+            Returns the type of the Viewmodel bound to this View class.
+            </summary>
+            <returns>Type of the Viewmodel bound to this View class.</returns>
+        </member>
+        <member name="M:MVVMbasics.Attributes.MvvmNavigationTargetAttribute.HasPath">
+            <summary>
+            Checks if a path to the XAML file representing this View class was specified.
+            </summary>
+            <returns>TRUE if a path was specified for this View class, FALSE otherwise</returns>
+        </member>
+        <member name="M:MVVMbasics.Attributes.MvvmNavigationTargetAttribute.GetPath">
+            <summary>
+            Returns the path to the XAML file representing this View class, if specified.
+            </summary>
+            <returns>Path to the XAML file representing this View class.</returns>
+        </member>
+        <member name="T:MVVMbasics.Attributes.MvvmServiceAttribute">
+            <summary>
+            Attribute to be applied to service classes.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Commands.BaseCommand">
+            <summary>
+            Simple delegate command all actual commands can be derived from. Works with and without parameters.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Commands.BaseCommand._execute">
+            <summary>
+            Method registered to this Command.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Commands.BaseCommand._canExecute">
+            <summary>
+            Condition that defines whether this Command is enabled or not.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Commands.BaseCommand._dependsOnProperties">
+            <summary>
+            List that hold the names of all Properties this Command depends on. If one of these Properties
+            changes, the Command's <c>CanExecute</c> condition needs to be re-evaluated.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.NotifyCanExecuteChanged">
+            <summary>
+            Fires the <see cref="E:MVVMbasics.Commands.BaseCommand.CanExecuteChanged">CanExecuteChanged</see> event, forcing the <c>CanExecute</c>
+            condition to be re-evaluated.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.#ctor(System.Action)">
+            <summary>
+            Constructor that creates a Command and registers a parameterless method to it.
+            </summary>
+            <param name="execute">Parameterless method.</param>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.#ctor(System.Action{System.Object})">
+            <summary>
+            Constructor that creates a Command and registers a method with one parameter of type <c>object</c> to it.
+            </summary>
+            <param name="execute">Method with one parameter of type <c>object</c>.</param>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.#ctor(System.Action,System.Linq.Expressions.Expression{System.Func{System.Boolean}},System.ComponentModel.INotifyPropertyChanged,System.Linq.Expressions.Expression{System.Func{System.Object}}[])">
+            <summary>
+            Constructor that creates a Command with a <c>CanExecute</c> condition and registers a parameterless method
+            to it.
+            </summary>
+            <param name="execute">Parameterless method.</param>
+            <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
+            <param name="owner">Model or Viewmodel that hosts this Command (and all Properties it depends on).</param>
+            <param name="dependsOnProperties">List of Properties this Command depends on.</param>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.#ctor(System.Action{System.Object},System.Linq.Expressions.Expression{System.Func{System.Object,System.Boolean}},System.ComponentModel.INotifyPropertyChanged,System.Linq.Expressions.Expression{System.Func{System.Object}}[])">
+            <summary>
+            Constructor that creates a Command with a <c>CanExecute</c> condition and registers a method with one
+            parameter of type <c>object</c> to it.
+            </summary>
+            <param name="execute">Method with one parameter of type <c>object</c>.</param>
+            <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
+            <param name="owner">Model or Viewmodel that hosts this Command (and all Properties it depends on).</param>
+            <param name="dependsOnProperties">List of Properties this Command depends on.</param>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.CanExecute">
+            <summary>
+            Evaluates the <c>CanExecute</c> condition.
+            </summary>
+            <returns>TRUE if the Command shall be enabled, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.CanExecute(System.Object)">
+            <summary>
+            Evaluates the <c>CanExecute</c> condition.
+            </summary>
+            <param name="parameter">Parameter to be passed to the <c>CanExecute</c> condition.</param>
+            <returns>TRUE if the Command shall be enabled, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.Execute">
+            <summary>
+            Calls the method that is registered to this Command.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.Execute(System.Object)">
+            <summary>
+            Calls the method that is registered to this Command.
+            </summary>
+            <param name="parameter">Parameter to be passed to the method.</param>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.OwnerPropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)">
+            <summary>
+            Event that is fired whenever one of the host's bindable Properties changes. Checks if the
+            respective Property is included in the list of Properties this Commands depends on, in which
+            case the <c>CanExecute</c> condition needs to be re-evaluated.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.StoreProperties(System.Linq.Expressions.Expression{System.Func{System.Object}}[])">
+            <summary>
+            Loops through all Properties this Command depends on and stores their names in a list.
+            </summary>
+            <param name="dependsOnProperties">Properties this Command depends on</param>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.ParseExpresionTree(System.Linq.Expressions.Expression,System.Collections.Generic.List{System.String})">
+            <summary>
+            Parses an expression (in pratice, a Command's <c>CanExecute</c> condition) to find all Properties
+            it references. Depending on the expression's type, this method is called recursively for all sub-
+            expressions. If a reference to a Property is found, the Property's name is added to a list.
+            </summary>
+            <param name="inputExpression">Expression to be parsed</param>
+            <param name="properties">List of detected Property names</param>
+        </member>
+        <member name="E:MVVMbasics.Commands.BaseCommand.CanExecuteChanged">
+            <summary>
+            Event indicating that the <c>CanExecute</c> condition might have changed and must be re-evaluated.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Exceptions.ServiceNotFoundException">
+            <summary>
+            Simple exception thrown by ServiceLocator when trying to retrieve a service that has not been registered.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Exceptions.ServiceResolutionException">
+            <summary>
+            Simple exception thrown by ServiceRegistry when resolving a service failed.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Exceptions.ServiceRegistrationException">
+            <summary>
+            Simple exception thrown by ServiceLocator when trying to register a service that has already been registered.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Helpers.ServiceRegistry">
+            <summary>
+            Simple IoC container that allows services to be registered and retrieved. All services must
+            implement the <see cref="T:MVVMbasics.Services.IService">IService</see> interface.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Helpers.ServiceRegistry._instances">
+            <summary>
+            Collection of all registered service instances.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Helpers.ServiceRegistry._types">
+            <summary>
+            Collection of all registered service types that have not yet been registered.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.Register(MVVMbasics.Services.IService)">
+            <summary>
+            Registers an instance of a certain service.
+            </summary>
+            <param name="service">Service to be registered.</param>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.Register``1">
+            <summary>
+            Registers a reference to a certain service type, without instantly instantiating it.
+            </summary>
+            <typeparam name="T">Type of service to be registered (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>).</typeparam>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.RegisterAll(System.Reflection.Assembly)">
+            <summary>
+            Traverses all services that are located in a given assembly and registers their types, without instantly
+            instantiating them.
+            </summary>
+            <param name="assembly">The assembly to be scanned. If NULL or not specified, the calling  assembly will be 
+            scanned.</param>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.RegisterAll(System.String,System.Reflection.Assembly)">
+            <summary>
+            Traverses all services that are located in a given namespace inside a given assembly and registers their 
+            types, without instantly instantiating them.
+            </summary>
+            <param name="ns">Namespace to be scanned. If ends with '.*', also sub-directories will be scanned. If NULL,
+            the whole assembly will be scanned.</param>
+            <param name="assembly">The assembly to be scanned. If NULL, the calling assembly will be scanned.</param>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.Contains``1">
+            <summary>
+            Returns TRUE if a certain kind of service has been registered, FALSE otherwise.
+            </summary>
+            <typeparam name="T">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>.</typeparam>
+            <returns>TRUE if a certain kind of service has been registered, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.Contains(System.Type)">
+            <summary>
+            Returns TRUE if a certain kind of service has been registered, FALSE otherwise.
+            </summary>
+            <param name="type">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>).</param>
+            <returns>TRUE if a certain kind of service has been registered, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.Resolve(System.Type)">
+            <summary>
+            Returns a matching service type if a service type is passed as parameter and a matching service has been
+            registered. Otherwise, instantiates the given type be resolving all its constructor parameters, and
+            returns the created instance.
+            </summary>
+            <param name="type">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>), or of the class to instantiate.</param>
+            <returns>Instance of the requested service or class.</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.Resolve``1">
+            <summary>
+            Returns a matching service type if a service type is passed as parameter and a matching service has been
+            registered. Otherwise, instantiates the given type be resolving all its constructor parameters, and
+            returns the created instance.
+            </summary>
+            <typeparam name="T">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>), or of the class to instantiate.</typeparam>
+            <returns>Instance of the requested service or class.</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.Retrieve(System.Type)">
+            <summary>
+            Creates a service instance, stores it, and returns it if desired. If no matching service has been
+            registered, an exception is thrown.
+            </summary>
+            <param name="type">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>.</param>
+            <returns>Instance of the requested service.</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.Instantiate(System.Type)">
+            <summary>
+            Creates an instance of a given type by resolving and instantiating all its parameter constructors and
+            calling the constructor to create an instance.
+            </summary>
+            <param name="type">Type of the class to be instantiated.</param>
+            <returns>Instance of the requested class.</returns>
+        </member>
+        <member name="T:MVVMbasics.Helpers.ServiceLocator">
+            <summary>
+            Service locator that allows services to be registered and retrieved. All services must implement the 
+            <see cref="T:MVVMbasics.Services.IService">IService</see> interface in order to be detected by 
+            <c>ServiceLocator</c>.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Helpers.ServiceLocator._instances">
+            <summary>
+            Collection of all registered service instances.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Helpers.ServiceLocator._types">
+            <summary>
+            Collection of all registered service types that have not yet been registered.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.Register(MVVMbasics.Services.IService)">
+            <summary>
+            Registers an instance of a certain service.
+            </summary>
+            <param name="service">Service to be registered.</param>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.Register``1">
+            <summary>
+            Registers a reference to a certain service type, without instantly instantiating it.
+            </summary>
+            <typeparam name="T">Type of service to be registered (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>).</typeparam>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.RegisterAll(System.Reflection.Assembly)">
+            <summary>
+            Traverses all services that are located in a given assembly and registers their types, without instantly
+            instantiating them.
+            </summary>
+            <param name="assembly">The assembly to be scanned. If NULL or not specified, the calling  assembly will be 
+            scanned.</param>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.RegisterAll(System.String,System.Reflection.Assembly)">
+            <summary>
+            Traverses all services that are located in a given namespace inside a given assembly and registers their 
+            types, without instantly instantiating them.
+            </summary>
+            <param name="ns">Namespace to be scanned. If ends with '.*', also sub-directories will be scanned. If NULL,
+            the whole assembly will be scanned.</param>
+            <param name="assembly">The assembly to be scanned. If NULL, the calling assembly will be scanned.</param>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.Contains``1">
+            <summary>
+            Returns TRUE if a certain kind of service has been registered, FALSE otherwise.
+            </summary>
+            <typeparam name="T">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>.</typeparam>
+            <returns>TRUE if a certain kind of service has been registered, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.Retrieve``1">
+            <summary>
+            Creates a service instance, stores and returns it, or throws an exception if no matching service has been
+            registered.
+            </summary>
+            <typeparam name="T">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>.</typeparam>
+            <returns>Instance of the requested service.</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.RetrieveOnce``1">
+            <summary>
+            Creates and returns a service instance without storing it, or throws an exception if no matching service has
+            been registered.
+            </summary>
+            <typeparam name="T">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>.</typeparam>
+            <returns>Instance of the requested service.</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.TryRetrieve``1(``0@)">
+            <summary>
+            Creates a service instance, stores it, and returns TRUE, if a matching service has been registered. If no
+            matching service is found, returns FALSE.
+            </summary>
+            <typeparam name="T">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>.</typeparam>
+            <param name="serviceInstance">Instance of the requested service.</param>
+            <returns>TRUE if the requested service was found, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.TryRetrieveOnce``1(``0@)">
+            <summary>
+            Creates a service instance and returns TRUE, if a matching service has been registered. If no matching
+            service is found, returns FALSE.
+            </summary>
+            <typeparam name="T">Type of service to be retrieved</typeparam>
+            <param name="serviceInstance">Instance of the requested service</param>
+            <returns>TRUE if the requested service was found, FALSE otherwise</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.TryRetrieve``1(``0@,System.Boolean)">
+            <summary>
+            Creates a service instance, stores it if desired, and returns TRUE, if a matching service has been
+            registered. If no matching service is found, returns FALSE.
+            </summary>
+            <typeparam name="T">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>.</typeparam>
+            <param name="serviceInstance">Instance of the requested service.</param>
+            <param name="instantiateAndStore">Flag indicating whether the service's instance shall be stored or not.
+            </param>
+            <returns>TRUE if the requested service was found, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Helpers.ServiceLocator.Retrieve``1(System.Boolean)">
+            <summary>
+            Creates a service instance and stores and returns it if desired. If no matching service has been registered,
+            an exception is thrown.
+            </summary>
+            <typeparam name="T">Type of service to be retrieved (must be a subclass of 
+            <see cref="T:MVVMbasics.Services.IService">IService</see>.</typeparam>
+            <param name="instantiateAndStore">Flag indicating whether the service's instance shall be stored or not.
+            </param>
+            <returns>Instance of the requested service.</returns>
+        </member>
+        <member name="T:MVVMbasics.Models.BaseModel">
+            <summary>
+            Basic data model, not to be implemented directly, but to be inherited by the actual data models. Contains
+            convenience functions that allow the implementation of <c>INotifyPropertyChanged</c> and some command's
+            <c>CanExecuteChanged</c> events in code snippets as short as possible.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.#ctor">
+            <summary>
+            Empty constructor.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.Set``1(``0@,``0,System.String)">
+            <summary>
+            Setter method that sets the private member field and fires the <c>PropertyChanged</c> event.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.Set``1(System.Func{System.Boolean},``0@,``0,System.String)">
+            <summary>
+            Setter method that sets the private member field, fires the <c>PropertyChanged</c> event and calls a
+            specified method to decide whether to continue updating the member field.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.Set``1(``0@,``0,System.Action,System.String)">
+            <summary>
+            Setter method that sets the private member field, fires the <c>PropertyChanged</c> event  and calls a
+            specified method after updating the member field.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.Set``1(System.Func{System.Boolean},``0@,``0,System.Action,System.String)">
+            <summary>
+            Setter method that sets the private member field, fires the <c>PropertyChanged</c> event and calls two
+            specified methods: One before updating the member field to decide whether to continue, one after updating
+            the member field.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.Set``1(``0@,``0,System.Linq.Expressions.Expression{System.Func{``0}},MVVMbasics.Commands.BaseCommand[])">
+            <summary>
+            Setter method that sets the private member field, fires the <c>PropertyChanged</c> event and optionally
+            fires one or multiple commands' <c>CanExecuteChanged</c> events.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.Set``1(``0@,``0,System.Linq.Expressions.Expression{System.Func{``0}},System.Action,MVVMbasics.Commands.BaseCommand[])">
+            <summary>
+            Setter method that sets the private member field, fires the <c>PropertyChanged</c> event, calls a specified
+            method after updating the member field, and optionally fires one or multiple commands' 
+            <c>CanExecuteChanged</c> events.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.CreateCommand(System.Action)">
+            <summary>
+            Creates a Command and registers a parameterless method to it.
+            </summary>
+            <param name="execute">Parameterless method.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.CreateCommand(System.Action{System.Object})">
+            <summary>
+            Creates a Command and registers a method with one parameter of type <c>object</c> to it.
+            </summary>
+            <param name="execute">Method with one parameter of type <c>object</c>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.CreateCommand(System.Action,System.Linq.Expressions.Expression{System.Func{System.Boolean}},System.Linq.Expressions.Expression{System.Func{System.Object}}[])">
+            <summary>
+            Creates a Command with a <c>CanExecute</c> condition and registers a parameterless method to it.
+            </summary>
+            <param name="execute">Parameterless method.</param>
+            <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
+            <param name="dependsOnProperties">List of Properties this Command depends on.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MVVMbasics.Models.BaseModel.CreateCommand(System.Action{System.Object},System.Linq.Expressions.Expression{System.Func{System.Object,System.Boolean}},System.Linq.Expressions.Expression{System.Func{System.Object}}[])">
+            <summary>
+            Creates a Command with a <c>CanExecute</c> condition and registers a method with one parameter of type
+            <c>object</c> to it.
+            </summary>
+            <param name="execute">Method with one parameter of type <c>object</c>.</param>
+            <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
+            <param name="dependsOnProperties">List of Properties this Command depends on.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MVVMbasics.Services.IMessageboxService">
+            <summary>
+            Interface specifying all methods for a service which allows to show alerts on the user interface through message
+            box popups.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Services.IService">
+            <summary>
+            Base service interface. All actual services must be derived from this interface to be recognized by
+            <see cref="T:MVVMbasics.Helpers.ServiceLocator">ServiceLocator</see>.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Services.INavigatorService">
+            <summary>
+            Interface specifying all methods for a service which provides page navigation functionality. Includes both 
+            "standard" navigation methods which navigate backwards, as well as a View-/Viewmodel-Locator that stores 
+            mappings of View to Viewmodel and allows to directly navigate to a View that is associated to a given Viewmodel.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Services.ViewState">
+            <summary>
+            Specifies the lifecycle states a View can reach:
+            <list type="bullet">
+            	<item>
+            		<term><c>Activated</c></term>
+            		<description>View is loaded for the first time</description>
+            	</item>
+            	<item>
+            		<term><c>Reactivated</c></term>
+            		<description>View has been inactive and is reactivated</description>
+            	</item>
+            	<item>
+            		<term><c>Deactivated</c></term>
+            		<description>Another View is loaded, the current one is not unloaded but remains in the background
+            		</description>
+            	</item>
+            	<item>
+            		<term><c>Hibernated</c></term>
+            		<description>The whole App is hibernated (occurs only on Phone and Tablet platforms)</description>
+            	</item>
+            	<item>
+            		<term><c>Awakened</c></term>
+            		<description>The whole App returns from tombstoning (occurs only on Phone and Tablet platforms)</description>
+            	</item>
+            	<item>
+            		<term><c>Closed</c></term>
+            		<description>View is completely unloaded and removed from the backstack</description>
+            	</item>
+            </list>
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Services.Parameter">
+            <summary>
+            Helper class that represents a parameter to be passed to a view during navigation.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.Object)">
+            <summary>
+            Constructor for use with parameter value of type <c>object</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.String)">
+            <summary>
+            Constructor for use with parameter value of type <c>string</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.Int32)">
+            <summary>
+            Constructor for use with parameter value of type <c>int</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.UInt32)">
+            <summary>
+            Constructor for use with parameter value of type <c>uint</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.Double)">
+            <summary>
+            Constructor for use with parameter value of type <c>double</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.Single)">
+            <summary>
+            Constructor for use with parameter value of type <c>float</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.Int64)">
+            <summary>
+            Constructor for use with parameter value of type <c>long</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.Int16)">
+            <summary>
+            Constructor for use with parameter value of type <c>short</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.UInt64)">
+            <summary>
+            Constructor for use with parameter value of type <c>ulong</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.UInt16)">
+            <summary>
+            Constructor for use with parameter value of type <c>ushort</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.Byte)">
+            <summary>
+            Constructor for use with parameter value of type <c>byte</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.SByte)">
+            <summary>
+            Constructor for use with parameter value of type <c>sbyte</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.Boolean)">
+            <summary>
+            Constructor for use with parameter value of type <c>bool</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.Char)">
+            <summary>
+            Constructor for use with parameter value of type <c>char</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="M:MVVMbasics.Services.Parameter.#ctor(System.String,System.DateTime)">
+            <summary>
+            Constructor for use with parameter value of type <c>DateTime</c>.
+            </summary>
+            <param name="key">Unique key</param>
+            <param name="value">Content value</param>
+        </member>
+        <member name="P:MVVMbasics.Services.Parameter.Key">
+            <summary>
+            The parameter's unique key
+            </summary>
+        </member>
+        <member name="P:MVVMbasics.Services.Parameter.Value">
+            <summary>
+            The parameter#s content value
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Services.ParameterList">
+            <summary>
+            Helper class that holds several <see cref="T:MVVMbasics.Services.Parameter">Parameters</see> which have been 
+            passed to a View during navigation.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.#ctor">
+            <summary>
+            Empty Constructor.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.#ctor(MVVMbasics.Services.Parameter[])">
+            <summary>
+            Constructor that expects one or several <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> objects
+            and creates a <c>ParameterList</c> of those.
+            </summary>
+            <param name="parameters">One or several <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> objects
+            to be contained in the <c>ParameterList</c>.</param>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.Contains(System.String)">
+            <summary>
+            Checks whether a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with specified key exists within
+            this <c>ParameterList</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be searched.
+            </param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key exists,
+            FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetObject(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>object</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.Get``1(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of custom types.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <typeparam name="T">Type of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </typeparam>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetObject(System.String,System.Object@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>object</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGet``1(System.String,``0@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of custom types that checks
+            whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <typeparam name="T">Type of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </typeparam>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetString(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>string</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetString(System.String,System.String@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>string</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetInt(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>int</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetInt(System.String,System.Int32@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>int</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetUInt(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>uint</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetUInt(System.String,System.UInt32@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>uint</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetDouble(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>double</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetDouble(System.String,System.Double@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>double</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetLong(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>long</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetLong(System.String,System.Int64@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>long</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetShort(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>short</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetShort(System.String,System.Int16@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>short</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetULong(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>ulong</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetULong(System.String,System.UInt64@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>ulong</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetUShort(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>ushort</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetUShort(System.String,System.UInt16@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>ushort</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetByte(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>byte</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetByte(System.String,System.Byte@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>byte</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetSByte(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>sbyte</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetSByte(System.String,System.SByte@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>sbyte</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetBoolean(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>bool</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetBoolean(System.String,System.Boolean@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>bool</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetChar(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>char</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetChar(System.String,System.Char@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>char</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.GetDateTime(System.String)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>DateTime</c>.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <returns>Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if specified.
+            </returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.TryGetDateTime(System.String,System.DateTime@)">
+            <summary>
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of type <c>DateTime</c> that
+            checks whether a parameter with the specified key exists.
+            </summary>
+            <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
+            </param>
+            <param name="result">Value of the desired <see cref="T:MVVMbasics.Services.Parameter">Parameter</see>, if
+            specified.</param>
+            <returns>TRUE if a <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> with the given key has been
+            specified, FALSE otherwise.</returns>
+        </member>
+        <member name="M:MVVMbasics.Services.ParameterList.Add(MVVMbasics.Services.Parameter[])">
+            <summary>
+            Adds one or several <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> objects to this 
+            <c>ParameterList</c>.
+            </summary>
+            <param name="parameters"><see cref="T:MVVMbasics.Services.Parameter">Parameter</see> objects to be added to
+            the <c>ParameterList</c>.</param>
+        </member>
+        <member name="T:MVVMbasics.Services.ITimerService">
+            <summary>
+            Interface specifying all methods for a timer service.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Viewmodels.BaseViewmodel">
+            <summary>
+            Base viewmodel class all actual viewmodels can be derived from.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Viewmodels.BaseViewmodel._commandAutobinding">
+            <summary>
+            Flag that indicates whether Commands shall be automatically mapped to methods.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.#ctor">
+            <summary>
+            Constructor. Tries to set the <c>CommandAutobinding</c> flag depending on whether an
+            <see cref="T:MVVMbasics.Attributes.MvvmCommandAutobindingAttribute">MvvmCommandAutobinding</see> attribute is
+            registered, and automatically binds Commands to methods if applicable.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.OnServiceLocatorAvailable">
+            <summary>
+            Method that is called when the App's <see cref="T:MVVMbasics.Helpers.ServiceLocator">ServiceLocator</see> is
+            set for the first time. Usually this happens shortly after the constructor.
+            Subclasses can override this method to be notified when the <c>ServiceLocator</c> is available, and then do
+            all the tasks that would occur in the constructor but are dependent on the <c>ServiceLocator</c>.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.OnNavigatedTo(MVVMbasics.Services.ParameterList,MVVMbasics.Services.ParameterList,MVVMbasics.Services.ViewState)">
+            <summary>
+            Method that is called when navigating to a page / window. Subclasses can override this method to be notified
+            when the page / window they represent is loaded and shown on the screen. In addition, all parameters that
+            were passed to the page / window can be easily retrieved and processed inside this method.
+            </summary>
+            <param name="uriParameters">List of parameters that were contained within the URI used to navigate to the current page / window.</param>
+            <param name="parameters">List of parameters that were passed from the calling page / window.</param>
+            <param name="viewState">Indicates the lifecycle state the View is about to reach.</param>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.CancelNavigatingFrom(MVVMbasics.Services.ViewState)">
+            <summary>
+            Method that is called when the page / window is about to be closed, in order to return back to the
+            previously shown page / window. Subclasses can override this method and return TRUE in order to cancel the
+            closing and the navigation process.
+            </summary>
+            <param name="viewState">Indicates the lifecycle state the View is about to reach.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.OnNavigatedFrom(MVVMbasics.Services.ViewState)">
+            <summary>
+            Method that is called when a page / window is closed. Subclasses can override this method to be notified
+            when the page / window they represent is closed.
+            </summary>
+            <param name="viewState">Indicates the lifecycle state the View is about to reach.</param>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.RunOnMainThread(System.Action)">
+            <summary>
+            Helper method that checks if some actions needs to be invoked on the main thread, and calls the
+            dispatcher to do so.
+            </summary>
+            <param name="action">Action to be invoked using the dispatcher if necessary</param>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.Set``1(``0@,``0,System.String)">
+            <summary>
+            Setter method that sets the private member field and fires the <c>PropertyChanged</c> event using the
+            Dispatcher.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.Set``1(System.Func{System.Boolean},``0@,``0,System.String)">
+            <summary>
+            Setter method that sets the private member field, fires the <c>PropertyChanged</c> event using the
+            Dispatcher, and calls a
+            specified method to decide whether to continue updating the member field.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.Set``1(``0@,``0,System.Action,System.String)">
+            <summary>
+            Setter method that sets the private member field, fires the <c>PropertyChanged</c> event using the
+            Dispatcher, and calls a specified method after updating the member field.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.Set``1(System.Func{System.Boolean},``0@,``0,System.Action,System.String)">
+            <summary>
+            Setter method that sets the private member field, fires the <c>PropertyChanged</c> event using the
+            Dispatcher, and calls two specified methods: One before updating the member field to decide whether to
+            continue, one after updating the member field.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.Set``1(``0@,``0,System.Linq.Expressions.Expression{System.Func{``0}},MVVMbasics.Commands.BaseCommand[])">
+            <summary>
+            Setter method that sets the private member field, fires the <c>PropertyChanged</c> event and optionally
+            fires one or multiple commands' <c>CanExecuteChanged</c> events.
+            </summary>
+        </member>
+        <member name="M:MVVMbasics.Viewmodels.BaseViewmodel.Set``1(``0@,``0,System.Linq.Expressions.Expression{System.Func{``0}},System.Action,MVVMbasics.Commands.BaseCommand[])">
+            <summary>
+            Setter method that sets the private member field, fires the <c>PropertyChanged</c> event, calls a specified
+            method after updating the member field, and optionally fires one or multiple commands' 
+            <c>CanExecuteChanged</c> events.
+            </summary>
+        </member>
+        <member name="P:MVVMbasics.Viewmodels.BaseViewmodel.ViewState">
+            <summary>
+            Flag that indicates whether the View which is registered to this Viewmodel is active (shown on the screen)
+            or not. Can be used to decide whether a message box shall be shown or not, for example.
+            </summary>
+        </member>
+        <member name="P:MVVMbasics.Viewmodels.BaseViewmodel.DispatcherHelper">
+            <summary>
+            Reference to the global dispatcher helper class. Used by the <code>RunOnMainThread</code> method.
+            </summary>
+        </member>
+        <member name="P:MVVMbasics.Viewmodels.BaseViewmodel.ServiceLocator">
+            <summary>
+            ServiceLocator to be used to retrieve service instances during Viewmodel logic. Is set by the View when
+            instantiating the Viewmodel, only if it was defined in the <c>BaseApplication</c>.
+            Should be used instead of directly referencing <c>Application.Current.ServiceLocator</c>, since the
+            Application might not in all cases be accesible (e.g., in multi-platform Apps the Viewmodel might be located
+            within a Portable Class Library that can not access the <c>Application</c> classes.
+            </summary>
+        </member>
+    </members>
+</doc>
