@@ -90,22 +90,49 @@ namespace MVVMbasics.Viewmodels
 			// Command can be mapped to
 			if (_commandAutobinding)
 			{
-				foreach (PropertyInfo property in GetType().GetTypeInfo().DeclaredProperties
+				foreach (PropertyInfo command in GetType().GetTypeInfo().DeclaredProperties
 					.Where(p => p.PropertyType == typeof(BaseCommand)))
 				{
-					string name = property.Name.Replace("Command", String.Empty).Replace("command", String.Empty);
-					MethodInfo method = GetType().GetTypeInfo().GetDeclaredMethod(name);
+					string methodName = command.Name.Replace("Command", String.Empty).Replace("command", String.Empty);
+					string conditionName = String.Format("Can{0}", methodName);
+
+					// Find a method with the Command's name
+					MethodInfo method = GetType().GetTypeInfo().GetDeclaredMethod(methodName);
 					if (method != null)
 					{
 						if (method.ReturnType == typeof(void))
 						{
 							if (!method.GetParameters().Any())
 							{
-								property.SetValue(this, new BaseCommand((Action)method.CreateDelegate(typeof(Action), this)));
+								// If available, retrieve the CanExecute condition
+								Expression<Func<bool>> condition = null;
+								PropertyInfo property = GetType().GetTypeInfo().GetDeclaredProperty(conditionName);
+								if (property != null && property.PropertyType == typeof(Expression<Func<bool>>))
+								{
+									condition = (Expression<Func<bool>>)property.GetValue(this);
+								}
+
+								// Instantiate the Command
+								command.SetValue(this,
+									condition == null
+										? new BaseCommand((Action) method.CreateDelegate(typeof (Action), this))
+										: new BaseCommand((Action) method.CreateDelegate(typeof (Action), this), condition, this));
 							}
 							else if (method.GetParameters().Count() == 1 && method.GetParameters().First().ParameterType == typeof(object))
 							{
-								property.SetValue(this, new BaseCommand((Action<object>)method.CreateDelegate(typeof(Action<object>), this)));
+								// If available, retrieve the CanExecute condition
+								Expression<Func<object, bool>> condition = null;
+								PropertyInfo property = GetType().GetTypeInfo().GetDeclaredProperty(conditionName);
+								if (property != null && property.PropertyType == typeof(Expression<Func<bool>>))
+								{
+									condition = (Expression<Func<object, bool>>)property.GetValue(null);
+								}
+
+								// Instantiate the Command
+								command.SetValue(this, 
+									condition == null
+										? new BaseCommand((Action<object>)method.CreateDelegate(typeof(Action<object>), this))
+										: new BaseCommand((Action<object>)method.CreateDelegate(typeof(Action<object>), this), condition, this));
 							}
 						}
 					}

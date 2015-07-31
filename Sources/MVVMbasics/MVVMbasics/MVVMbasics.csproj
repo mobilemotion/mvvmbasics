@@ -63,6 +63,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Commands\BaseCommand.cs" />
+    <Compile Include="Exceptions\ExpressionResolutionException.cs" />
     <Compile Include="Exceptions\ServiceNotFoundException.cs" />
     <Compile Include="Exceptions\ServiceResolutionException.cs" />
     <Compile Include="Exceptions\ServiceRegistrationException.cs" />

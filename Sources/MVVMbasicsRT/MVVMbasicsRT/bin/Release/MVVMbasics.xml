@@ -4,6 +4,30 @@
         <name>MVVMbasics</name>
     </assembly>
     <members>
+        <member name="T:MVVMbasics.Attributes.MvvmBindableAttribute">
+            <summary>
+            Attribute to be applied to Model or Viewmodel properties. All public properties within classes that inherit
+            from <see cref="T:MVVMbasics.Services.Parameter">BaseModel</see> or
+            <see cref="T:MVVMbasics.Services.Parameter">BaseViewmodel</see> which are marked with this attribute will raise
+            the <c>PropertyChanged</c> event after being changed. 
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Attributes.MvvmBindableIgnoreAttribute">
+            <summary>
+            Attribute to be applied to Model or Viewmodel properties. All public properties within classes that are
+            marked with the <see cref="T:MVVMbasics.Services.Parameter">BaseModel</see> or
+            <see cref="T:MVVMbasics.Services.Parameter">BaseViewmodel</see> will not raise the <c>PropertyChanged</c>
+            event after being changed. 
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Attributes.MvvmBindablePropertiesAttribute">
+            <summary>
+            Attribute to be applied to Model or Viewmodel classes which inherit from
+            <see cref="T:MVVMbasics.Services.Parameter">BaseModel</see> or
+            <see cref="T:MVVMbasics.Services.Parameter">BaseViewmodel</see>. All public properties within that class will
+            raise the <c>PropertyChanged</c> event after being changed. 
+            </summary>
+        </member>
         <member name="T:MVVMbasics.Attributes.MvvmCommandAutobindingAttribute">
             <summary>
             Attribute to be applied to Viewmodel classes. Define whether CommandAutobinding (the automatic binding of 
@@ -66,11 +90,6 @@
             Attribute to be applied to service classes.
             </summary>
         </member>
-        <member name="T:MVVMbasics.Commands.BaseCommand">
-            <summary>
-            Simple delegate command all actual commands can be derived from. Works with and without parameters.
-            </summary>
-        </member>
         <member name="F:MVVMbasics.Commands.BaseCommand._execute">
             <summary>
             Method registered to this Command.
@@ -79,6 +98,11 @@
         <member name="F:MVVMbasics.Commands.BaseCommand._canExecute">
             <summary>
             Condition that defines whether this Command is enabled or not.
+            </summary>
+        </member>
+        <member name="F:MVVMbasics.Commands.BaseCommand._viewmodel">
+            <summary>
+            Reference to the Viewmodel holding this Command instance.
             </summary>
         </member>
         <member name="F:MVVMbasics.Commands.BaseCommand._dependsOnProperties">
@@ -164,18 +188,31 @@
             </summary>
             <param name="dependsOnProperties">Properties this Command depends on</param>
         </member>
-        <member name="M:MVVMbasics.Commands.BaseCommand.ParseExpresionTree(System.Linq.Expressions.Expression,System.Collections.Generic.List{System.String})">
+        <member name="M:MVVMbasics.Commands.BaseCommand.StoreProperty(System.String,System.Linq.Expressions.Expression)">
+            <summary>
+            For a single property, retrieved its containing class, stores the property and the container's
+            type in a global list, and subscribes to the container's <code>PropertyChanged</code> event.
+            </summary>
+            <param name="propertyName">Property to be stored</param>
+            <param name="inputExpression">The property's containing class</param>
+        </member>
+        <member name="M:MVVMbasics.Commands.BaseCommand.ParseExpresionTree(System.Linq.Expressions.Expression)">
             <summary>
             Parses an expression (in pratice, a Command's <c>CanExecute</c> condition) to find all Properties
             it references. Depending on the expression's type, this method is called recursively for all sub-
-            expressions. If a reference to a Property is found, the Property's name is added to a list.
+            expressions. If a reference to a Property is found, the Property's name and its declaring class
+            are stored using the <code>StoreProperty</code> method.
             </summary>
             <param name="inputExpression">Expression to be parsed</param>
-            <param name="properties">List of detected Property names</param>
         </member>
         <member name="E:MVVMbasics.Commands.BaseCommand.CanExecuteChanged">
             <summary>
             Event indicating that the <c>CanExecute</c> condition might have changed and must be re-evaluated.
+            </summary>
+        </member>
+        <member name="T:MVVMbasics.Exceptions.ExpressionResolutionException">
+            <summary>
+            Simple exception thrown by ServiceLocator when trying to retrieve a service that has not been registered.
             </summary>
         </member>
         <member name="T:MVVMbasics.Exceptions.ServiceNotFoundException">
@@ -185,7 +222,7 @@
         </member>
         <member name="T:MVVMbasics.Exceptions.ServiceResolutionException">
             <summary>
-            Simple exception thrown by ServiceLocator when trying to register a service that has already been registered.
+            Simple exception thrown by ServiceRegistry when resolving a service failed.
             </summary>
         </member>
         <member name="T:MVVMbasics.Exceptions.ServiceRegistrationException">
@@ -262,17 +299,17 @@
             returns the created instance.
             </summary>
             <param name="type">Type of service to be retrieved (must be a subclass of 
-            <see cref="T:MVVMbasics.Services.IService">IService</see>, or of the class to instantiate.</param>
+            <see cref="T:MVVMbasics.Services.IService">IService</see>), or of the class to instantiate.</param>
             <returns>Instance of the requested service or class.</returns>
         </member>
-        <member name="M:MVVMbasics.Helpers.ServiceRegistry.Resove``1">
+        <member name="M:MVVMbasics.Helpers.ServiceRegistry.Resolve``1">
             <summary>
             Returns a matching service type if a service type is passed as parameter and a matching service has been
             registered. Otherwise, instantiates the given type be resolving all its constructor parameters, and
             returns the created instance.
             </summary>
             <typeparam name="T">Type of service to be retrieved (must be a subclass of 
-            <see cref="T:MVVMbasics.Services.IService">IService</see>, or of the class to instantiate.</typeparam>
+            <see cref="T:MVVMbasics.Services.IService">IService</see>), or of the class to instantiate.</typeparam>
             <returns>Instance of the requested service or class.</returns>
         </member>
         <member name="M:MVVMbasics.Helpers.ServiceRegistry.Retrieve(System.Type)">
@@ -723,7 +760,8 @@
         </member>
         <member name="M:MVVMbasics.Services.ParameterList.TryGet``1(System.String,``0@)">
             <summary>
-            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of custom types.
+            Getter for <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> values of custom types that checks
+            whether a parameter with the specified key exists.
             </summary>
             <param name="key">Key of the <see cref="T:MVVMbasics.Services.Parameter">Parameter</see> to be retrieved.
             </param>

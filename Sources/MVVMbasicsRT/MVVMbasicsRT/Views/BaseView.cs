@@ -1,5 +1,7 @@
 ﻿/*
  * (c) 2013-2015 Andreas Kuntner
+ * 
+ * some corrections Kristian Walsh
  */
 
 using System;
@@ -90,10 +92,6 @@ namespace MVVMbasics.Views
 		{
 			Parameters = new ParameterList();
 			BackParameters = new ParameterList();
-
-			// This is necessary to avoid crashing Visual Studio's visual XAML editor
-			if (!Windows.ApplicationModel.DesignMode.DesignModeEnabled)
-				Window.Current.VisibilityChanged += OnWindowVisibilityChanged;
 		}
 
 		#endregion
@@ -251,6 +249,10 @@ namespace MVVMbasics.Views
 			// event
 			Parameters.Clear();
 
+			// This is necessary to avoid crashing Visual Studio's visual XAML editor
+			if (!Windows.ApplicationModel.DesignMode.DesignModeEnabled)
+				Window.Current.VisibilityChanged += OnWindowVisibilityChanged;
+
 			base.OnNavigatedTo(e);
 		}
 
@@ -331,6 +333,12 @@ namespace MVVMbasics.Views
 				}
 				Viewmodel.OnNavigatedFrom(viewState);
 			}
+
+			// Ensure that the page can correctly be disposed
+			Viewmodel = null;
+			DataContext = null;
+
+			Window.Current.VisibilityChanged -= OnWindowVisibilityChanged;
 
 			base.OnNavigatedFrom(e);
 		}

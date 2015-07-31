@@ -1,6 +1,9 @@
 ﻿/*
  * (c) 2013-2015 Andreas Kuntner
+ * 
+ * some corrections Frank Albert
  */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,12 +11,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows.Input;
+using MVVMbasics.Exceptions;
 
 namespace MVVMbasics.Commands
 {
-	/// <summary>
-	/// Simple delegate command all actual commands can be derived from. Works with and without parameters.
-	/// </summary>
 	public class BaseCommand : ICommand
 	{
 		#region Members
@@ -29,10 +30,15 @@ namespace MVVMbasics.Commands
 		private readonly Func<object, bool> _canExecute = null;
 
 		/// <summary>
+		/// Reference to the Viewmodel holding this Command instance.
+		/// </summary>
+		private readonly INotifyPropertyChanged _viewmodel;
+
+		/// <summary>
 		/// List that hold the names of all Properties this Command depends on. If one of these Properties
 		/// changes, the Command's <c>CanExecute</c> condition needs to be re-evaluated.
 		/// </summary>
-		private readonly List<string> _dependsOnProperties = new List<string>();
+		private readonly Dictionary<Type, List<string>> _dependsOnProperties = new Dictionary<Type, List<string>>();
 
 		#endregion
 
@@ -93,11 +99,17 @@ namespace MVVMbasics.Commands
 
 			if (canExecute != null)
 			{
+				if (owner == null)
+					throw new ArgumentNullException("owner");
+
 				Func<bool> canExecuteFunc = canExecute.Compile();
 				_canExecute = o => canExecuteFunc();
 
 				// Reset the list of Properties this Command depends on
 				_dependsOnProperties.Clear();
+
+				// Store a reference to the Viewmodel
+				_viewmodel = owner;
 
 				// Fill the list of Properties this Command depends on
 				if (dependsOnProperties != null && dependsOnProperties.Any())
@@ -107,16 +119,9 @@ namespace MVVMbasics.Commands
 				}
 				else
 				{
-					// If Properties have been specified as parameters, parse the CanExecute condition to find all
+					// If no Properties have been specified as parameters, parse the CanExecute condition to find all
 					// Properties it depends on
-					ParseExpresionTree(canExecute, _dependsOnProperties);
-				}
-
-				// Register to the host's PropertyChanged event, to be notified whenever a Property this Command depends
-				// on changes
-				if (owner != null && _dependsOnProperties.Any())
-				{
-					owner.PropertyChanged += OwnerPropertyChanged;
+					ParseExpresionTree(canExecute);
 				}
 			}
 		}
@@ -139,11 +144,17 @@ namespace MVVMbasics.Commands
 
 			if (canExecute != null)
 			{
+				if (owner == null)
+					throw new ArgumentNullException("owner");
+
 				Func<object, bool> canExecuteFunc = canExecute.Compile();
 				_canExecute = canExecuteFunc;
 
 				// Reset the list of Properties this Command depends on
 				_dependsOnProperties.Clear();
+
+				// Store a reference to the Viewmodel
+				_viewmodel = owner;
 
 				// Fill the list of Properties this Command depends on
 				if (dependsOnProperties != null && dependsOnProperties.Any())
@@ -153,16 +164,9 @@ namespace MVVMbasics.Commands
 				}
 				else
 				{
-					// If Properties have been specified as parameters, parse the CanExecute condition to find all
+					// If no Properties have been specified as parameters, parse the CanExecute condition to find all
 					// Properties it depends on
-					ParseExpresionTree(canExecute, _dependsOnProperties);
-				}
-
-				// Register to the host's PropertyChanged event, to be notified whenever a Property this Command depends
-				// on changes
-				if (owner != null && _dependsOnProperties.Any())
-				{
-					owner.PropertyChanged += OwnerPropertyChanged;
+					ParseExpresionTree(canExecute);
 				}
 			}
 		}
@@ -246,8 +250,11 @@ namespace MVVMbasics.Commands
 		/// <param name="e"></param>
 		private void OwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (_dependsOnProperties.Contains(e.PropertyName))
-				NotifyCanExecuteChanged();
+			if (_dependsOnProperties.ContainsKey(sender.GetType()) &&
+				_dependsOnProperties[sender.GetType()].Contains(e.PropertyName))
+			{
+				this.NotifyCanExecuteChanged();
+			}
 		}
 
 		/// <summary>
@@ -258,25 +265,118 @@ namespace MVVMbasics.Commands
 		{
 			foreach (var dependsOnProperty in dependsOnProperties)
 			{
+				// Retrieve the property's name and an expression that describes its containing class
 				string propertyName = null;
+				Expression ownerExpression = null;
 				var expression = dependsOnProperty.Body;
-				if (expression is MemberExpression)
-					propertyName = ((MemberExpression)expression).Member.Name;
-				else if (expression is UnaryExpression)
-					propertyName = ((MemberExpression)((UnaryExpression)expression).Operand).Member.Name;
-				if (!String.IsNullOrEmpty(propertyName))
-					_dependsOnProperties.Add(propertyName);
+				var memberExpression = expression as MemberExpression;
+				if (memberExpression != null)
+				{
+					propertyName = memberExpression.Member.Name;
+					ownerExpression = memberExpression.Expression;
+				}
+				else
+				{
+					var unaryExpression = expression as UnaryExpression;
+					if (unaryExpression != null)
+					{
+						propertyName = ((MemberExpression)unaryExpression.Operand).Member.Name;
+						ownerExpression = ((MemberExpression)unaryExpression.Operand).Expression;
+					}
+				}
+
+				// Store the detected property and subscribe to its container's PropertyChanged event
+				if (!String.IsNullOrEmpty(propertyName) && ownerExpression != null)
+					StoreProperty(propertyName, ownerExpression);
+			}
+		}
+
+		/// <summary>
+		/// For a single property, retrieved its containing class, stores the property and the container's
+		/// type in a global list, and subscribes to the container's <code>PropertyChanged</code> event.
+		/// </summary>
+		/// <param name="propertyName">Property to be stored</param>
+		/// <param name="inputExpression">The property's containing class</param>
+		private void StoreProperty(string propertyName, Expression inputExpression)
+		{
+			if (_viewmodel != null)
+			{
+				// Usually, properties are defined directly within the Viewmodel class
+				INotifyPropertyChanged owner = _viewmodel;
+				var e = inputExpression as MemberExpression;
+				if (e != null)
+				{
+					// If a property is declared within a container class, find out if this container
+					// is declared as Field or Property within the Viewmodel class, and retrieved its
+					// actual instance
+					var property = e.Member as PropertyInfo;
+					if (property != null)
+					{
+						object ownerValue;
+						if (property.DeclaringType != _viewmodel.GetType())
+						{
+							try
+							{
+								// In case of a singeton instance call, we can retrieve the value in spite of
+								// nested container declarations
+								ownerValue = property.GetValue(e);
+							}
+							catch (Exception)
+							{
+								// In case of nested container types, the actual instance can not be retrieved.
+								// In this case, throw an exception.
+								throw new ExpressionResolutionException(String.Format("The container class of the property {0} (expression: {1}) could not be resolved", propertyName, e.ToString()));
+							}
+						}
+						else
+						{
+							ownerValue = property.GetValue(_viewmodel);
+						}
+						owner = ownerValue as INotifyPropertyChanged;
+					}
+					else
+					{
+						var field = e.Member as FieldInfo;
+						if (field != null)
+						{
+							if (field.DeclaringType != _viewmodel.GetType())
+							{
+								// In case of nested container types, the actual instance can not be retrieved.
+								// In this case, throw an exception.
+								throw new ExpressionResolutionException(String.Format("The container class of the property {0} (expression: {1}) could not be resolved", propertyName, e.ToString()));
+							}
+							var ownerValue = field.GetValue(_viewmodel);
+							owner = ownerValue as INotifyPropertyChanged;
+						}
+					}
+				}
+				if (inputExpression != null && owner != null)
+				{
+					// Store the container class' type and the property's name in a global list, and (if not
+					// done already) subscribe to the container's PropertyChanged event
+					var ownerType = owner.GetType();
+					if (_dependsOnProperties.ContainsKey(ownerType))
+					{
+						if (!_dependsOnProperties[ownerType].Contains(propertyName))
+							_dependsOnProperties[ownerType].Add(propertyName);
+					}
+					else
+					{
+						_dependsOnProperties.Add(ownerType, new List<string> { propertyName });
+						owner.PropertyChanged += OwnerPropertyChanged;
+					}
+				}
 			}
 		}
 
 		/// <summary>
 		/// Parses an expression (in pratice, a Command's <c>CanExecute</c> condition) to find all Properties
 		/// it references. Depending on the expression's type, this method is called recursively for all sub-
-		/// expressions. If a reference to a Property is found, the Property's name is added to a list.
+		/// expressions. If a reference to a Property is found, the Property's name and its declaring class
+		/// are stored using the <code>StoreProperty</code> method.
 		/// </summary>
 		/// <param name="inputExpression">Expression to be parsed</param>
-		/// <param name="properties">List of detected Property names</param>
-		private void ParseExpresionTree(Expression inputExpression, List<string> properties)
+		private void ParseExpresionTree(Expression inputExpression)
 		{
 			// When a MemberExpression is found, check if the actual member is a Property of a class that
 			// implements INotifyPropertyChanged, and in that case store it. In addition, recursively check
@@ -287,71 +387,69 @@ namespace MVVMbasics.Commands
 				var member = e.Member;
 				if (member is PropertyInfo)
 				{
-					PropertyInfo property = member as PropertyInfo;
-					Type owner = property.DeclaringType;
-					if (owner.GetTypeInfo().ImplementedInterfaces.Contains(typeof(INotifyPropertyChanged)))
+					var property = member as PropertyInfo;
+					var ownerType = property.DeclaringType;
+					if (ownerType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(INotifyPropertyChanged)))
 					{
-						string propertyName = property.Name;
-						if (!properties.Contains(propertyName))
-							properties.Add(propertyName);
+						StoreProperty(property.Name, e.Expression);
 					}
 				}
-				ParseExpresionTree(e.Expression, properties);
+				ParseExpresionTree(e.Expression);
 			}
 
-			// For all other types, just check their child expressions
+			// For all other types, just check their child expressions until a MemberExpression is found
 			else if (inputExpression is BlockExpression)
 			{
 				var e = inputExpression as BlockExpression;
 				foreach (var expression in e.Expressions)
 				{
-					ParseExpresionTree(expression, properties);
+					ParseExpresionTree(expression);
 				}
 			}
 			else if (inputExpression is BinaryExpression)
 			{
 				var e = inputExpression as BinaryExpression;
-				ParseExpresionTree(e.Left, properties);
-				ParseExpresionTree(e.Right, properties);
+				ParseExpresionTree(e.Left);
+				ParseExpresionTree(e.Right);
 			}
 			else if (inputExpression is ConditionalExpression)
 			{
 				var e = inputExpression as ConditionalExpression;
-				ParseExpresionTree(e.Test, properties);
-				ParseExpresionTree(e.IfTrue, properties);
-				ParseExpresionTree(e.IfFalse, properties);
+				ParseExpresionTree(e.Test);
+				ParseExpresionTree(e.IfTrue);
+				ParseExpresionTree(e.IfFalse);
 			}
 			else if (inputExpression is InvocationExpression)
 			{
 				var e = inputExpression as InvocationExpression;
-				ParseExpresionTree(e.Expression, properties);
+				ParseExpresionTree(e.Expression);
 			}
 			else if (inputExpression is LambdaExpression)
 			{
 				var e = inputExpression as LambdaExpression;
-				ParseExpresionTree(e.Body, properties);
+				ParseExpresionTree(e.Body);
 			}
 			else if (inputExpression is ListInitExpression)
 			{
 				var e = inputExpression as ListInitExpression;
-				ParseExpresionTree(e.NewExpression, properties);
+				ParseExpresionTree(e.NewExpression);
 			}
 			else if (inputExpression is LoopExpression)
 			{
 				var e = inputExpression as LoopExpression;
-				ParseExpresionTree(e.Body, properties);
+				ParseExpresionTree(e.Body);
 			}
 			else if (inputExpression is MemberInitExpression)
 			{
 				var e = inputExpression as MemberInitExpression;
-				ParseExpresionTree(e.NewExpression, properties);
+				ParseExpresionTree(e.NewExpression);
 			}
 			else if (inputExpression is NewExpression)
 			{
 				var e = inputExpression as NewExpression;
 				foreach (var expression in e.Arguments)
 				{
-					ParseExpresionTree(expression, properties);
+					ParseExpresionTree(expression);
 				}
 			}
 			else if (inputExpression is NewArrayExpression)
@@ -359,57 +457,58 @@ namespace MVVMbasics.Commands
 				var e = inputExpression as NewArrayExpression;
 				foreach (var expression in e.Expressions)
 				{
-					ParseExpresionTree(expression, properties);
+					ParseExpresionTree(expression);
 				}
 			}
 			else if (inputExpression is SwitchExpression)
 			{
 				var e = inputExpression as SwitchExpression;
-				ParseExpresionTree(e.SwitchValue, properties);
-				ParseExpresionTree(e.DefaultBody, properties);
+				ParseExpresionTree(e.SwitchValue);
+				ParseExpresionTree(e.DefaultBody);
 				foreach (var c in e.Cases)
 				{
-					ParseExpresionTree(c.Body, properties);
+					ParseExpresionTree(c.Body);
 					foreach (var expression in c.TestValues)
 					{
-						ParseExpresionTree(expression, properties);
+						ParseExpresionTree(expression);
 					}
 				}
 			}
 			else if (inputExpression is TypeBinaryExpression)
 			{
 				var e = inputExpression as TypeBinaryExpression;
-				ParseExpresionTree(e.Expression, properties);
+				ParseExpresionTree(e.Expression);
 			}
 			else if (inputExpression is TryExpression)
 			{
 				var e = inputExpression as TryExpression;
-				ParseExpresionTree(e.Body, properties);
-				ParseExpresionTree(e.Fault, properties);
-				ParseExpresionTree(e.Finally, properties);
+				ParseExpresionTree(e.Body);
+				ParseExpresionTree(e.Fault);
+				ParseExpresionTree(e.Finally);
 			}
 			else if (inputExpression is UnaryExpression)
 			{
 				var e = inputExpression as UnaryExpression;
-				ParseExpresionTree(e.Operand, properties);
+				ParseExpresionTree(e.Operand);
 			}
 
-			// Expressions of type MethodCallExpression are a special case: Only analyze their arguments and their owner, not their body
+			// Expressions of type MethodCallExpression are a special case: Only analyze their arguments and
+			// their owner, not their body
 			else if (inputExpression is MethodCallExpression)
 			{
 				var e = inputExpression as MethodCallExpression;
 				foreach (Expression argument in e.Arguments)
 				{
-					ParseExpresionTree(argument, properties);
+					ParseExpresionTree(argument);
 				}
 				if (e.Object != null)
 				{
-					ParseExpresionTree(e.Object, properties);
+					ParseExpresionTree(e.Object);
 				}
 			}
 
 			// The following type(s) of expressions need not to be handled:
-			// - ConstantExpression (beacuse Constant values need no binding since they won't change)
+			// - ConstantExpression (because Constant values need no binding since they won't change)
 		}
 
 		#endregion

@@ -1,5 +1,7 @@
 ﻿/*
  * (c) 2013-2015 Andreas Kuntner
+ * 
+ * some corrections Kristian Walsh
  */
 
 using System;
@@ -237,7 +239,19 @@ namespace MVVMbasics.Services
 						TypeInfo type = (TypeInfo)Retrieve(previousViewmodel.GetType());
 						IsBackNavigation = true;
 						BackNavigationViewmodel = previousViewmodel;
+
+						// Keep the system page stack correctly sized
+						for (int i=0; i<2 && frame.BackStack.Count > 0; ++i)
+						{
+							// Remove two pages: the one we're leaving, and the one we're going back to (which will be
+							// added to the stack by frame.Navigate(...))
+							frame.BackStack.RemoveAt(frame.BackStack.Count - 1); 
+						}
+
+						// Now, actually do navigate...
 						frame.Navigate(type.AsType());
+
+						// ...and keep the internal back stack clear
 						_backStack.RemoveAt(_backStack.Count - 1);
 					}
 				}
