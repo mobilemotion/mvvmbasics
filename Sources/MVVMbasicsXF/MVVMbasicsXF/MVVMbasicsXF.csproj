@@ -31,6 +31,7 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Converters\TextWrapConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Converters\BooleanValueInverter.cs" />
     <Compile Include="Exceptions\ViewmodelRegistrationException.cs" />

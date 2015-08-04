@@ -48,6 +48,7 @@
     <Compile Include="Converters\BooleanValueInverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Converters\TextWrapConverter.cs" />
     <Compile Include="Exceptions\ViewmodelRegistrationException.cs" />
     <Compile Include="Exceptions\ViewNotFoundException.cs" />
     <Compile Include="Helpers\DispatcherHelper.cs" />
