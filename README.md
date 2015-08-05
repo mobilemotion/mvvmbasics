@@ -14,11 +14,22 @@ The framework consists of the MVVMbasics core library and platform-specific Exte
 
 However, MVVMbasics is an interesting option even for single-platform projects, since it is a very light-weight extension library that offeres standardized implementations of Data Binding through the INotifyPropertyChanged interface as well as Command Binding, and therefore helps reducing the necessity of writing redundant code for each newly created App project.
 
-## New features in Version 2.2
+## New features in Version 2.2.6
+* Support for Visual Studio 2015 and C# 6
+* Correct back navigation in Store Apps (via Visual Studio project templates)
+
+## New features in Version 2.2.5
+* Correct resolution of nested property desclarations in Commands’ CanExecute conditions
+* Automatic binding of Commands to CanExecute conditions when using MvvmCommandAutobinding attribute
+
+## New features in Version 2.2.3
+* Passing custom parameters during event-to-command redirection
+* Simple built-in service container
+* Support for 3rd party IoC containers
+
+## New features in Version 2.2.0
 * Full Xamarin.Forms support
 * Attribute-based bindable property declaration
-* Passing custom parameters during event-to-command redirection (version 2.2.2 and above)
-* Simple built-in service container and support for 3rd party IoC containers (version 2.2.3 and above)
 
 ## New features in Version 2.1
 * Smart UI dispatcher
