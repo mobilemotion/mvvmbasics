@@ -13,6 +13,7 @@ using MVVMbasics.Commands;
 using MVVMbasics.Helpers;
 using MVVMbasics.Models;
 using MVVMbasics.Services;
+using System.Threading.Tasks;
 
 namespace MVVMbasics.Viewmodels
 {
@@ -90,53 +91,7 @@ namespace MVVMbasics.Viewmodels
 			// Command can be mapped to
 			if (_commandAutobinding)
 			{
-				foreach (PropertyInfo command in GetType().GetTypeInfo().DeclaredProperties
-					.Where(p => p.PropertyType == typeof(BaseCommand)))
-				{
-					string methodName = command.Name.Replace("Command", String.Empty).Replace("command", String.Empty);
-					string conditionName = String.Format("Can{0}", methodName);
-
-					// Find a method with the Command's name
-					MethodInfo method = GetType().GetTypeInfo().GetDeclaredMethod(methodName);
-					if (method != null)
-					{
-						if (method.ReturnType == typeof(void))
-						{
-							if (!method.GetParameters().Any())
-							{
-								// If available, retrieve the CanExecute condition
-								Expression<Func<bool>> condition = null;
-								PropertyInfo property = GetType().GetTypeInfo().GetDeclaredProperty(conditionName);
-								if (property != null && property.PropertyType == typeof(Expression<Func<bool>>))
-								{
-									condition = (Expression<Func<bool>>)property.GetValue(this);
-								}
-
-								// Instantiate the Command
-								command.SetValue(this,
-									condition == null
-										? new BaseCommand((Action) method.CreateDelegate(typeof (Action), this))
-										: new BaseCommand((Action) method.CreateDelegate(typeof (Action), this), condition, this));
-							}
-							else if (method.GetParameters().Count() == 1 && method.GetParameters().First().ParameterType == typeof(object))
-							{
-								// If available, retrieve the CanExecute condition
-								Expression<Func<object, bool>> condition = null;
-								PropertyInfo property = GetType().GetTypeInfo().GetDeclaredProperty(conditionName);
-								if (property != null && property.PropertyType == typeof(Expression<Func<bool>>))
-								{
-									condition = (Expression<Func<object, bool>>)property.GetValue(null);
-								}
-
-								// Instantiate the Command
-								command.SetValue(this, 
-									condition == null
-										? new BaseCommand((Action<object>)method.CreateDelegate(typeof(Action<object>), this))
-										: new BaseCommand((Action<object>)method.CreateDelegate(typeof(Action<object>), this), condition, this));
-							}
-						}
-					}
-				}
+				WireCommandAutobinding();
 			}
 		}
 
@@ -206,6 +161,92 @@ namespace MVVMbasics.Viewmodels
 				DispatcherHelper.RunOnMainThread(action);
 			else
 				action.Invoke();
+		}
+
+		/// <summary>
+		/// Loops through all Commands defined within the current Viewmodel and checks if methods exists
+		/// that these Commands can be mapped to.
+		/// </summary>
+		private void WireCommandAutobinding()
+		{
+			foreach (PropertyInfo command in GetType().GetTypeInfo().DeclaredProperties
+				.Where(p => p.PropertyType == typeof(BaseCommand)))
+			{
+				string methodName = command.Name.Replace("Command", String.Empty).Replace("command", String.Empty);
+				string conditionName = String.Format("Can{0}", methodName);
+
+				// Find a method with the Command's name
+				MethodInfo method = GetType().GetTypeInfo().GetDeclaredMethod(methodName);
+				if (method != null)
+				{
+					var returnType = method.ReturnType;
+                    if (returnType == typeof(void) || 
+						returnType == typeof(Task))
+					{
+						Expression<Func<bool>> condition = null;
+						Expression<Func<object, bool>> conditionWithParam = null;
+						bool hasParameters = false;
+						bool isAsync = (returnType == typeof(Task));
+
+						if (!method.GetParameters().Any())
+						{
+							// If available, retrieve the CanExecute condition
+							PropertyInfo property = GetType().GetTypeInfo().GetDeclaredProperty(conditionName);
+							if (property != null && property.PropertyType == typeof(Expression<Func<bool>>))
+							{
+								condition = (Expression<Func<bool>>)property.GetValue(this);
+							}
+						}
+						else if (method.GetParameters().Count() == 1 && method.GetParameters().First().ParameterType == typeof(object))
+						{
+							hasParameters = true;
+
+							// If available, retrieve the CanExecute condition
+							PropertyInfo property = GetType().GetTypeInfo().GetDeclaredProperty(conditionName);
+							if (property != null && property.PropertyType == typeof(Expression<Func<bool>>))
+							{
+								conditionWithParam = (Expression<Func<object, bool>>)property.GetValue(null);
+							}
+						}
+
+						// Instantiate the Command
+						if (!isAsync)
+						{
+							if (!hasParameters)
+							{
+								if (condition == null)
+									command.SetValue(this, new BaseCommand((Action)method.CreateDelegate(typeof(Action), this)));
+								else
+									command.SetValue(this, new BaseCommand((Action)method.CreateDelegate(typeof(Action), this), condition, this));
+							}
+							else
+							{
+								if (conditionWithParam == null)
+									command.SetValue(this, new BaseCommand((Action<object>)method.CreateDelegate(typeof(Action<object>), this)));
+								else
+									command.SetValue(this, new BaseCommand((Action<object>)method.CreateDelegate(typeof(Action<object>), this), conditionWithParam, this));
+							}
+						}
+						else
+						{
+							if (!hasParameters)
+							{
+								if (condition == null)
+									command.SetValue(this, new BaseCommand((Func<Task>)method.CreateDelegate(typeof(Func<Task>), this)));
+								else
+									command.SetValue(this, new BaseCommand((Func<Task>)method.CreateDelegate(typeof(Func<Task>), this), condition, this));
+							}
+							else
+							{
+								if (conditionWithParam == null)
+									command.SetValue(this, new BaseCommand((Func<object, Task>)method.CreateDelegate(typeof(Func<object, Task>), this)));
+								else
+									command.SetValue(this, new BaseCommand((Func<object, Task>)method.CreateDelegate(typeof(Func<object, Task>), this), conditionWithParam, this));
+							}
+						}
+					}
+				}
+			}
 		}
 
 		#endregion

@@ -1,7 +1,0 @@
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsPS\MVVMbasicsPS\Bin\Debug\MVVMbasicsPS.dll
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsPS\MVVMbasicsPS\Bin\Debug\MVVMbasicsPS.pdb
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsPS\MVVMbasicsPS\Bin\Debug\MVVMbasics.dll
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsPS\MVVMbasicsPS\Bin\Debug\MVVMbasics.pdb
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsPS\MVVMbasicsPS\obj\Debug\MVVMbasicsPS.csprojResolveAssemblyReference.cache
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsPS\MVVMbasicsPS\obj\Debug\MVVMbasicsPS.dll
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsPS\MVVMbasicsPS\obj\Debug\MVVMbasicsPS.pdb

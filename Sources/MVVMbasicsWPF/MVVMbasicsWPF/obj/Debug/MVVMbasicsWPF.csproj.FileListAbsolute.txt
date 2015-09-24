@@ -1,7 +1,0 @@
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsWPF\MVVMbasicsWPF\bin\Debug\MVVMbasicsWPF.dll
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsWPF\MVVMbasicsWPF\bin\Debug\MVVMbasicsWPF.pdb
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsWPF\MVVMbasicsWPF\bin\Debug\MVVMbasics.dll
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsWPF\MVVMbasicsWPF\bin\Debug\MVVMbasics.pdb
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsWPF\MVVMbasicsWPF\obj\Debug\MVVMbasicsWPF.csprojResolveAssemblyReference.cache
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsWPF\MVVMbasicsWPF\obj\Debug\MVVMbasicsWPF.dll
-C:\_Projekte\MVVMbasics2\Sources\MVVMbasicsWPF\MVVMbasicsWPF\obj\Debug\MVVMbasicsWPF.pdb

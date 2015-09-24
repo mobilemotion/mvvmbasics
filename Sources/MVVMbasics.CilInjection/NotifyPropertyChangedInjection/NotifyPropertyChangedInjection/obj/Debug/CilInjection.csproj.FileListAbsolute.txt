@@ -1,9 +1,0 @@
-C:\_Projekte\MVVMbasics2\Sources\CilInjection\CilInjection\obj\Debug\CilInjection.pdb
-C:\_Projekte\MVVMbasics2\Sources\CilInjection\CilInjection\bin\Debug\CilInjection.pdb
-C:\_Projekte\MVVMbasics2\Sources\CilInjection\CilInjection\bin\Debug\Mono.Cecil.dll
-C:\_Projekte\MVVMbasics2\Sources\CilInjection\CilInjection\bin\Debug\Mono.Cecil.Mdb.dll
-C:\_Projekte\MVVMbasics2\Sources\CilInjection\CilInjection\bin\Debug\Mono.Cecil.Pdb.dll
-C:\_Projekte\MVVMbasics2\Sources\CilInjection\CilInjection\bin\Debug\Mono.Cecil.Rocks.dll
-C:\_Projekte\MVVMbasics2\Sources\CilInjection\CilInjection\bin\Debug\CilInjection.dll.config
-C:\_Projekte\MVVMbasics2\Sources\CilInjection\CilInjection\bin\Debug\CilInjection.dll
-C:\_Projekte\MVVMbasics2\Sources\CilInjection\CilInjection\obj\Debug\CilInjection.dll

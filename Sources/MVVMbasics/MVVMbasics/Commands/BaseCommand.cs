@@ -12,9 +12,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows.Input;
 using MVVMbasics.Exceptions;
+using System.Threading.Tasks;
 
 namespace MVVMbasics.Commands
 {
+	/// <summary>
+	/// Basic implementation of an MVVM command.
+	/// </summary>
 	public class BaseCommand : ICommand
 	{
 		#region Members
@@ -23,6 +27,11 @@ namespace MVVMbasics.Commands
 		/// Method registered to this Command.
 		/// </summary>
 		private readonly Action<object> _execute;
+
+		/// <summary>
+		/// Asynchronous method registered to this Command.
+		/// </summary>
+		private readonly Func<object, Task> _executeAsync;
 
 		/// <summary>
 		/// Condition that defines whether this Command is enabled or not.
@@ -64,39 +73,10 @@ namespace MVVMbasics.Commands
 		#region Constructors
 
 		/// <summary>
-		/// Constructor that creates a Command and registers a parameterless method to it.
+		/// Generic constructor for a parameterless command that may be used by derived classes.
 		/// </summary>
-		/// <param name="execute">Parameterless method.</param>
-		public BaseCommand(Action execute)
-			: this(o => execute(), null, null)
+		protected BaseCommand(Expression<Func<bool>> canExecute, INotifyPropertyChanged owner, params Expression<Func<object>>[] dependsOnProperties)
 		{
-		}
-
-		/// <summary>
-		/// Constructor that creates a Command and registers a method with one parameter of type <c>object</c> to it.
-		/// </summary>
-		/// <param name="execute">Method with one parameter of type <c>object</c>.</param>
-		public BaseCommand(Action<object> execute)
-			: this(execute, null, null)
-		{
-		}
-
-		/// <summary>
-		/// Constructor that creates a Command with a <c>CanExecute</c> condition and registers a parameterless method
-		/// to it.
-		/// </summary>
-		/// <param name="execute">Parameterless method.</param>
-		/// <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
-		/// <param name="owner">Model or Viewmodel that hosts this Command (and all Properties it depends on).</param>
-		/// <param name="dependsOnProperties">List of Properties this Command depends on.</param>
-		public BaseCommand(Action execute, Expression<Func<bool>> canExecute, INotifyPropertyChanged owner, params Expression<Func<object>>[] dependsOnProperties)
-		{
-			if (execute == null)
-				throw new ArgumentNullException("execute");
-
-			// Store the method and, if applicable, the CanExecute condition
-			_execute = o => execute();
-
 			if (canExecute != null)
 			{
 				if (owner == null)
@@ -127,21 +107,11 @@ namespace MVVMbasics.Commands
 		}
 
 		/// <summary>
-		/// Constructor that creates a Command with a <c>CanExecute</c> condition and registers a method with one
-		/// parameter of type <c>object</c> to it.
+		/// Generic constructor for a command with one parameter of type <c>object</c> that may be used by derived
+		/// classes.
 		/// </summary>
-		/// <param name="execute">Method with one parameter of type <c>object</c>.</param>
-		/// <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
-		/// <param name="owner">Model or Viewmodel that hosts this Command (and all Properties it depends on).</param>
-		/// <param name="dependsOnProperties">List of Properties this Command depends on.</param>
-		public BaseCommand(Action<object> execute, Expression<Func<object, bool>> canExecute, INotifyPropertyChanged owner, params Expression<Func<object>>[] dependsOnProperties)
+		protected BaseCommand(Expression<Func<object, bool>> canExecute, INotifyPropertyChanged owner, params Expression<Func<object>>[] dependsOnProperties)
 		{
-			if (execute == null)
-				throw new ArgumentNullException("execute");
-
-			// Store the method and, if applicable, the CanExecute condition
-			_execute = execute;
-
 			if (canExecute != null)
 			{
 				if (owner == null)
@@ -169,6 +139,114 @@ namespace MVVMbasics.Commands
 					ParseExpresionTree(canExecute);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Constructor that creates a Command and registers a parameterless method to it.
+		/// </summary>
+		/// <param name="execute">Parameterless method.</param>
+		public BaseCommand(Action execute)
+			: this(o => execute(), null, null)
+		{
+		}
+
+		/// <summary>
+		/// Constructor that creates a Command and registers a method with one parameter of type <c>object</c> to it.
+		/// </summary>
+		/// <param name="execute">Method with one parameter of type <c>object</c>.</param>
+		public BaseCommand(Action<object> execute)
+			: this(execute, null, null)
+		{
+		}
+
+		/// <summary>
+		/// Constructor that creates a Command with a <c>CanExecute</c> condition and registers a parameterless method
+		/// to it.
+		/// </summary>
+		/// <param name="execute">Parameterless method.</param>
+		/// <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
+		/// <param name="owner">Model or Viewmodel that hosts this Command (and all Properties it depends on).</param>
+		/// <param name="dependsOnProperties">List of Properties this Command depends on.</param>
+		public BaseCommand(Action execute, Expression<Func<bool>> canExecute, INotifyPropertyChanged owner, params Expression<Func<object>>[] dependsOnProperties)
+			: this(canExecute, owner, dependsOnProperties)
+		{
+			if (execute == null)
+				throw new ArgumentNullException("execute");
+
+			_execute = o => execute();
+			_executeAsync = null;
+		}
+
+		/// <summary>
+		/// Constructor that creates a Command with a <c>CanExecute</c> condition and registers a method with one
+		/// parameter of type <c>object</c> to it.
+		/// </summary>
+		/// <param name="execute">Method with one parameter of type <c>object</c>.</param>
+		/// <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
+		/// <param name="owner">Model or Viewmodel that hosts this Command (and all Properties it depends on).</param>
+		/// <param name="dependsOnProperties">List of Properties this Command depends on.</param>
+		public BaseCommand(Action<object> execute, Expression<Func<object, bool>> canExecute, INotifyPropertyChanged owner, params Expression<Func<object>>[] dependsOnProperties)
+			: this(canExecute, owner, dependsOnProperties)
+		{
+			if (execute == null)
+				throw new ArgumentNullException("execute");
+
+			_execute = execute;
+			_executeAsync = null;
+		}
+
+		/// <summary>
+		/// Constructor that creates a Command and registers a parameterless method to it.
+		/// </summary>
+		/// <param name="execute">Parameterless method.</param>
+		public BaseCommand(Func<Task> execute)
+			: this(o => execute(), null, null)
+		{
+		}
+
+		/// <summary>
+		/// Constructor that creates a Command and registers a method with one parameter of type <c>object</c> to it.
+		/// </summary>
+		/// <param name="execute">Method with one parameter of type <c>object</c>.</param>
+		public BaseCommand(Func<object, Task> execute)
+			: this(execute, null, null)
+		{
+		}
+
+		/// <summary>
+		/// Constructor that creates a Command with a <c>CanExecute</c> condition and registers a parameterless method
+		/// to it.
+		/// </summary>
+		/// <param name="execute">Parameterless method.</param>
+		/// <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
+		/// <param name="owner">Model or Viewmodel that hosts this Command (and all Properties it depends on).</param>
+		/// <param name="dependsOnProperties">List of Properties this Command depends on.</param>
+		public BaseCommand(Func<Task> execute, Expression<Func<bool>> canExecute, INotifyPropertyChanged owner, params Expression<Func<object>>[] dependsOnProperties)
+			: this(canExecute, owner, dependsOnProperties)
+		{
+			if (execute == null)
+				throw new ArgumentNullException("execute");
+
+			_executeAsync = o => execute();
+			_execute = null;
+		}
+
+		/// <summary>
+		/// Constructor that creates a Command with a <c>CanExecute</c> condition and registers a method with one
+		/// parameter of type <c>object</c> to it.
+		/// </summary>
+		/// <param name="execute">Method with one parameter of type <c>object</c>.</param>
+		/// <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
+		/// <param name="owner">Model or Viewmodel that hosts this Command (and all Properties it depends on).</param>
+		/// <param name="dependsOnProperties">List of Properties this Command depends on.</param>
+		public BaseCommand(Func<object, Task> execute, Expression<Func<object, bool>> canExecute, INotifyPropertyChanged owner, params Expression<Func<object>>[] dependsOnProperties)
+			: this(canExecute, owner, dependsOnProperties)
+		{
+			if (execute == null)
+				throw new ArgumentNullException("execute");
+
+			_executeAsync = execute;
+			_execute = null;
 		}
 
 		#endregion
@@ -231,15 +309,32 @@ namespace MVVMbasics.Commands
 		/// Calls the method that is registered to this Command.
 		/// </summary>
 		/// <param name="parameter">Parameter to be passed to the method.</param>
-		public void Execute(object parameter)
+		public async void Execute(object parameter)
 		{
 			if (CanExecute(parameter))
-				_execute(parameter);
+			{
+				if (_execute != null)
+					_execute(parameter);
+				else if (_executeAsync != null)
+					await _executeAsync(parameter);
+			}
+		}
+
+		/// <summary>
+		/// Calls the asynchronous method that is registered to this Command.
+		/// </summary>
+		/// <param name="parameter">Parameter to be passed to the method.</param>
+		/// <returns>Task representing the asynchronous operation.</returns>
+		public Task ExecuteAsync(object parameter)
+		{
+			if (_executeAsync != null && CanExecute(parameter))
+				return _executeAsync(parameter);
+			return null;
 		}
 
 		#endregion
 
-		#region Private helper methods
+		#region Helper methods
 
 		/// <summary>
 		/// Event that is fired whenever one of the host's bindable Properties changes. Checks if the
