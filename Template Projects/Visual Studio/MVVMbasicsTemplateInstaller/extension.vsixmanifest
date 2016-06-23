@@ -1,6 +1,6 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
   <Metadata>
-    <Identity Id="MVVMbasicsTemplateInstaller.1f8f958f-70bd-4673-a0e1-5ebbc0fb8565" Version="2.3.0.2" Language="en-US" Publisher="mobilemotion.eu" />
+    <Identity Id="MVVMbasicsTemplateInstaller.1f8f958f-70bd-4673-a0e1-5ebbc0fb8565" Version="2.3.0.3" Language="en-US" Publisher="mobilemotion.eu" />
     <DisplayName>MVVMbasics Project Templates</DisplayName>
     <Description xml:space="preserve">Installs the project templates for working with the MVVMbasics library.</Description>
     <MoreInfo>http://mvvmbasics.mobilemotion.eu/</MoreInfo>
