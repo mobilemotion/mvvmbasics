@@ -1,5 +1,5 @@
 ﻿/*
- * (c) 2013-2015 Andreas Kuntner
+ * (c) 2013-2016 Andreas Kuntner
  */
 
 using System;
@@ -194,7 +194,10 @@ namespace MVVMbasics.Services
 				if (nextPage != null)
 				{
 					nextPage.Parameters = parameters;
-					app.MainPage.Navigation.PushAsync (nextPage);
+					if (app.MainPage == null)
+						app.MainPage = new NavigationPage(nextPage);
+					else
+						app.MainPage.Navigation.PushAsync (nextPage);
 				}
 			}
 		}

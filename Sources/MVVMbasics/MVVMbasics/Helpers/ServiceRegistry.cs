@@ -1,5 +1,5 @@
 ﻿/*
- * (c) 2013-2015 Andreas Kuntner
+ * (c) 2013-2016 Andreas Kuntner
  */
 
 using System;
@@ -175,9 +175,9 @@ namespace MVVMbasics.Helpers
 		/// <typeparam name="T">Type of service to be retrieved (must be a subclass of 
 		/// <see cref="MVVMbasics.Services.IService">IService</see>), or of the class to instantiate.</typeparam>
 		/// <returns>Instance of the requested service or class.</returns>
-		public object Resolve<T>()
+		public T Resolve<T>()
 		{
-			return Resolve(typeof(T));
+			return (T)Resolve(typeof(T));
 		}
 
 		#endregion

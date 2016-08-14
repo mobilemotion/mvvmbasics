@@ -1,5 +1,5 @@
 ﻿/*
- * (c) 2013-2015 Andreas Kuntner
+ * (c) 2013-2016 Andreas Kuntner
  */
 
 using MVVMbasics.Views;
@@ -69,21 +69,6 @@ namespace MVVMbasics
 		}
 
 		/// <summary>
-		/// Defines the application's main page. If the provided page is not of type <code>NavigationPage</code>, it
-		/// is automatically wrapped within a <code>NavigationPage</code>.
-		/// </summary>
-		/// <param name="page">The application's main page.</param>
-		protected void SetStartupPage(Page page)
-		{
-			if (page is NavigationPage)
-			{
-				MainPage = page;
-			}
-
-			MainPage = new NavigationPage(page);
-		}
-
-/*		/// <summary>
 		/// Defines the application's main page. If the provided page is not of type <code>NavigationPage</code> and
 		/// a <see cref="MVVMbasics.Services.NavigatorService">NavigatorService</see> with more than one
 		/// View-to-Viewmodel mapping is registered, it is automatically wrapped within a <code>NavigationPage</code>.
@@ -127,7 +112,7 @@ namespace MVVMbasics
 			// If no NavigatorService has been found, or only one View/Viewmodel mapping is present, it's not
 			// necessary to wrap the given page within a NavigationPage, so just register it as MainPage
 			MainPage = page;
-		}*/
+		}
 
 		/// <summary>
 		/// Method that instantiates Viewmodels and resolves service references. Override this method to use

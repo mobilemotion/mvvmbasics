@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("mobilemotion.eu")]
 [assembly: AssemblyProduct ("MVVMbasicsXF")]
-[assembly: AssemblyCopyright("Copyright © Andreas Kuntner 2013-2015")]
+[assembly: AssemblyCopyright("Copyright © Andreas Kuntner 2013-2016")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 
@@ -17,7 +17,7 @@ using System.Runtime.CompilerServices;
 // The form "{Major}.{Minor}.*" will automatically update the build and revision,
 // and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
-[assembly: AssemblyVersion ("2.2.6")]
+[assembly: AssemblyVersion ("2.3.1")]
 
 // The following attributes are used to specify the signing key for the assembly,
 // if desired. See the Mono documentation for more information about signing.

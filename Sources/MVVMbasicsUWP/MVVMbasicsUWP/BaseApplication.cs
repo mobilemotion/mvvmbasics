@@ -1,5 +1,5 @@
 ﻿/*
- * (c) 2013-2015 Andreas Kuntner
+ * (c) 2013-2016 Andreas Kuntner
  */
 
 using System;
@@ -29,7 +29,28 @@ namespace MVVMbasics
 		/// Reference to the current View's main frame (to be used for navigation by the 
 		/// <see cref="NavigatorService">NavigatorService</see>).
 		/// </summary>
-		public Frame RootFrame { get; internal set; }
+		public Frame RootFrame
+		{
+			get
+			{
+				if (_rootFrame == null)
+				{
+					// Assign the App's root frame, if not done already
+					var frame = Window.Current?.Content as Frame;
+					if (frame == null)
+					{
+						frame = new Frame();
+						frame.CacheSize = 1;
+						if (Window.Current != null)
+							Window.Current.Content = frame;
+					}
+					_rootFrame = frame;
+				}
+				return _rootFrame;
+			}
+			internal set { _rootFrame = value; }
+		}
+		private Frame _rootFrame;
 
 		/// <summary>
 		/// Simple IoC container that can be used to register MVVM services that are used within Viewmodels.
