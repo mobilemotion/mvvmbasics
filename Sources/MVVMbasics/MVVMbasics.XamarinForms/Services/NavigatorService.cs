@@ -1,19 +1,16 @@
 ﻿/*
- * (c) 2013-2015 Andreas Kuntner
- * 
- * some corrections Kristian Walsh
+ * (c) 2013-2016 Andreas Kuntner
  */
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using MVVMbasics.Attributes;
 using MVVMbasics.Exceptions;
 using MVVMbasics.Viewmodels;
 using MVVMbasics.Views;
+using Xamarin.Forms;
 
 namespace MVVMbasics.Services
 {
@@ -32,20 +29,7 @@ namespace MVVMbasics.Services
 		/// <c>Dictionary</c>). Both for Viewmodels and Views, only their respective types are stored instead of actual
 		/// instances.
 		/// </summary>
-		private readonly Dictionary<Type, TypeInfo> _mappings = new Dictionary<Type, TypeInfo>();
-
-		/// <summary>
-		/// Collection of Viewmodel instances of all Views that have been opened and not closed yet. When navigating away
-		/// from a View (while not closing it), it's Viewmodel instance is added to this stack, to be retrieved and
-		/// re-assgined to the View whenever the View is reactivated again.
-		/// </summary>
-		private readonly List<BaseViewmodel> _backStack = new List<BaseViewmodel>();
-
-		/// <summary>
-		/// Flag that indicates whether NavigatorService is closing a view and navigating backwards at the moment. This is
-		/// read by BaseView's OnNavigatedFrom and OnNavigatedTo methods.
-		/// </summary>
-		internal bool IsBackNavigation = false;
+		internal readonly Dictionary<Type, Type> Mappings = new Dictionary<Type, Type>();
 
 		/// <summary>
 		/// If we are currently navigating backwards (as indicated by the IsBackNavigation flag), this property contains
@@ -54,6 +38,12 @@ namespace MVVMbasics.Services
 		/// cleared and contains NULL again.
 		/// </summary>
 		internal BaseViewmodel BackNavigationViewmodel = null;
+
+		/// <summary>
+		/// Flag that indicates whether NavigatorService is closing a view and navigating backwards at the moment. This is
+		/// read by BaseView's OnNavigatedFrom and OnNavigatedTo methods.
+		/// </summary>
+		internal bool IsBackNavigation = false;
 
 		#endregion
 
@@ -72,16 +62,16 @@ namespace MVVMbasics.Services
 				throw new ViewmodelRegistrationException("View to be registered must be supplied as type 'Type'.");
 			if (!(((Type)view).GetTypeInfo().IsSubclassOf(typeof(BaseView))))
 				throw new ViewmodelRegistrationException("Viewmodel may only be registered to View that extends 'BaseView'.");
-			if (_mappings.ContainsKey(typeof(T)))
+			if (Mappings.ContainsKey(typeof(T)))
 				throw new ViewmodelRegistrationException("Viewmodel of type '" + typeof(T).FullName +
 														 "' is already registered to a View.");
 			Type type = (Type)view;
-			_mappings.Add(typeof(T), type.GetTypeInfo());
+			Mappings.Add(typeof(T), type);
 		}
 
 		/// <summary>
 		/// Traverses all Views that are located within a given namespace and registers all that provide a
-		/// <see cref="MVVMbasics.Attributes.MvvmNavigationTargetAttribute">MvvmNavigationTarget</see> attribute.
+		/// <see cref="MVVMbasics.Attributes.MvvmNavigationTarget">MvvmNavigationTarget</see> attribute.
 		/// An exception is thrown if one of the traversed Views references a Viewmodel type that has been registered
 		/// already.
 		/// </summary>
@@ -93,7 +83,7 @@ namespace MVVMbasics.Services
 
 		/// <summary>
 		/// Traverses all Views that are located within a given namespace inside a given assembly and registers all that
-		/// provide a <see cref="MVVMbasics.Attributes.MvvmNavigationTargetAttribute">MvvmNavigationTarget</see> attribute.
+		/// provide a <see cref="MVVMbasics.Attributes.MvvmNavigationTarget">MvvmNavigationTarget</see> attribute.
 		/// An exception is thrown if one of the traversed Views references a Viewmodel type that has been registered
 		/// already.
 		/// </summary>
@@ -106,8 +96,7 @@ namespace MVVMbasics.Services
 			// (The method GetCallingAssembly is not available in Windows Store Libraries, therefore must be called
 			// through reflection)
 			if (assembly == null)
-				assembly = (Assembly)typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly")
-					.Invoke(null, new object[0]);
+				assembly = Assembly.GetEntryAssembly();
 
 			// List all classes that fulfill the following criteria:
 			// (1) inherit from BaseView
@@ -141,14 +130,14 @@ namespace MVVMbasics.Services
 					Type viewmodel = navigationTarget.GetViewmodel();
 					if (viewmodel != null)
 					{
-						if (_mappings.ContainsKey(viewmodel))
+						if (Mappings.ContainsKey(viewmodel))
 						{
 							throw new ViewmodelRegistrationException("Viewmodel of type '" + viewmodel.FullName +
 																	 "' is already registered to a View.");
 						}
 						else
 						{
-							_mappings.Add(viewmodel, view);
+							Mappings.Add(viewmodel, view.AsType());
 						}
 					}
 				}
@@ -169,10 +158,10 @@ namespace MVVMbasics.Services
 
 		private object Retrieve(Type t)
 		{
-			if (!_mappings.ContainsKey(t))
+			if (!Mappings.ContainsKey(t))
 				throw new ViewNotFoundException();
 			else
-				return _mappings[t];
+				return Mappings[t];
 		}
 
 		/// <summary>
@@ -196,23 +185,18 @@ namespace MVVMbasics.Services
 		/// </summary>
 		public void NavigateTo<T>(ParameterList parameters) where T : BaseViewmodel
 		{
-			var application = Application.Current as BaseApplication;
-			if (application != null)
+			var app = Application.Current as BaseApplication;
+			if (app != null)
 			{
-				Frame frame = application.RootFrame;
-				if (frame != null)
+				Type type = (Type)Retrieve<T>();
+				var nextPage = Activator.CreateInstance (type) as BaseView;
+				if (nextPage != null)
 				{
-					TypeInfo type = (TypeInfo)Retrieve<T>();
-					frame.Navigated += (sender, args) =>
-						{
-							var nextView = args.Content as BaseView;
-							if (nextView != null)
-							{
-								nextView.Parameters = parameters;
-							}
-						};
-					IsBackNavigation = false;
-					frame.Navigate(type.AsType());
+					nextPage.Parameters = parameters;
+					if (app.MainPage == null)
+						app.MainPage = new NavigationPage(nextPage);
+					else
+						app.MainPage.Navigation.PushAsync (nextPage);
 				}
 			}
 		}
@@ -222,38 +206,12 @@ namespace MVVMbasics.Services
 		/// </summary>
 		public void NavigateBack()
 		{
-			if (_backStack.Count > 0)
+			if (CanGoBack ())
 			{
-				var application = Application.Current as BaseApplication;
-				if (application != null)
+				var app = Application.Current as BaseApplication;
+				if (app != null)
 				{
-					Frame frame = application.RootFrame;
-					if (frame != null)
-					{
-						// Since we manage the back stack on our own instead of relying on the built-in back stack and
-						// navigation, we cannot simply call frame.NavigateBack()
-						// Instead, retrieve the Viewmodel instance of the View that is about to be reactivated from the
-						// back stack, store it in the BackNavigationViewmodel property for the page to pick it up, call
-						// frame.Navigate() and remove the retrieved Viewmodel instance from the back stack.
-						BaseViewmodel previousViewmodel = _backStack[_backStack.Count - 1];
-						TypeInfo type = (TypeInfo)Retrieve(previousViewmodel.GetType());
-						IsBackNavigation = true;
-						BackNavigationViewmodel = previousViewmodel;
-
-						// Keep the system page stack correctly sized
-						for (int i=0; i<2 && frame.BackStack.Count > 0; ++i)
-						{
-							// Remove two pages: the one we're leaving, and the one we're going back to (which will be
-							// added to the stack by frame.Navigate(...))
-							frame.BackStack.RemoveAt(frame.BackStack.Count - 1); 
-						}
-
-						// Now, actually do navigate...
-						frame.Navigate(type.AsType());
-
-						// ...and keep the internal back stack clear
-						_backStack.RemoveAt(_backStack.Count - 1);
-					}
+					app.MainPage.Navigation.PopAsync ();
 				}
 			}
 		}
@@ -287,16 +245,16 @@ namespace MVVMbasics.Services
 		/// <param name="parameters">Parameters to be stored for passing to the previos page.</param>
 		public void SetBackParameters(ParameterList parameters)
 		{
-			var application = Application.Current as BaseApplication;
-			if (application != null)
+			var app = Application.Current as BaseApplication;
+			if (app != null)
 			{
-				Frame frame = application.RootFrame;
-				if (frame != null)
+				int stackSize = app.MainPage.Navigation.NavigationStack.Count;
+				if (stackSize >= 2)
 				{
-					BaseView view = (BaseView)frame.Content;
-					if (view != null)
+					var previousPage = app.MainPage.Navigation.NavigationStack[stackSize - 2] as BaseView;
+					if (previousPage != null)
 					{
-						view.BackParameters = parameters;
+						previousPage.Parameters = parameters;
 					}
 				}
 			}
@@ -308,16 +266,16 @@ namespace MVVMbasics.Services
 		/// </summary>
 		public void ClearBackParameters()
 		{
-			var application = Application.Current as BaseApplication;
-			if (application != null)
+			var app = Application.Current as BaseApplication;
+			if (app != null)
 			{
-				Frame frame = application.RootFrame;
-				if (frame != null)
+				int stackSize = app.MainPage.Navigation.NavigationStack.Count;
+				if (stackSize >= 2)
 				{
-					BaseView view = (BaseView)frame.Content;
-					if (view != null)
+					var previousPage = app.MainPage.Navigation.NavigationStack[stackSize - 2] as BaseView;
+					if (previousPage != null)
 					{
-						view.BackParameters = new ParameterList();
+						previousPage.Parameters = new ParameterList();
 					}
 				}
 			}
@@ -328,24 +286,21 @@ namespace MVVMbasics.Services
 		#region Methods for Back-Stack Handling
 
 		/// <summary>
-		/// Stores the currently closing View's Viewmodel instance on the back stack, in order to be able to re-assign
-		/// it whenever this View will be reactivated again.
-		/// Gets called from within BaseView's OnNavigatingFrom method.
-		/// </summary>
-		/// <param name="viewmodel">Viewmodel instance of the View that is currently being closed</param>
-		internal void AddToBackstack(BaseViewmodel viewmodel)
-		{
-			_backStack.Add(viewmodel);
-		}
-
-		/// <summary>
 		/// Checks whether a backwards navigation is possible or not (the latter ist the case if the current View is the
 		/// Application's main View).
 		/// </summary>
 		/// <returns>TRUE if a backwards navigation is possible, FALSE otherwise</returns>
 		public bool CanGoBack()
 		{
-			return _backStack.Count > 0;
+			var app = Application.Current as BaseApplication;
+			if (app != null)
+			{
+				return app.MainPage.Navigation.NavigationStack.Count > 1;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -353,8 +308,18 @@ namespace MVVMbasics.Services
 		/// </summary>
 		public void RemoveBackEntry()
 		{
-			if (_backStack.Count > 0)
-				_backStack.RemoveAt(_backStack.Count - 1);
+			var app = Application.Current as BaseApplication;
+			if (app != null) {
+				int stackSize = app.MainPage.Navigation.NavigationStack.Count;
+				if (stackSize > 2)
+				{
+					app.MainPage.Navigation.RemovePage (app.MainPage.Navigation.NavigationStack [stackSize - 2]);
+				}
+				else if (stackSize == 2)
+				{
+					ClearBackStack ();
+				}
+			}
 		}
 
 		/// <summary>
@@ -362,7 +327,15 @@ namespace MVVMbasics.Services
 		/// </summary>
 		public void ClearBackStack()
 		{
-			_backStack.Clear();
+			var app = Application.Current as BaseApplication;
+			if (app != null)
+			{
+				var navigation = app.MainPage.Navigation;
+				while (navigation.NavigationStack.Count >= 2)
+				{
+					navigation.RemovePage(navigation.NavigationStack[0]);
+				}
+			}
 		}
 
 		#endregion

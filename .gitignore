@@ -1,5 +1,8 @@
 *.suo
+*.lock
+.vs/
 bin/
 obj/
 packages/
 !packages/repositories.config
+Testing/

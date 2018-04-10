@@ -92,8 +92,8 @@ namespace MVVMbasics.Helpers
 			// List all classes that fulfill the following criteria:
 			// (1) extend IService
 			// (2) are located in the given namespace
-			if (assembly == null)
-				assembly = (Assembly)typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly").Invoke(null, new object[0]);
+		    if (assembly == null)
+		        assembly = Assembly.GetEntryAssembly();
 			IEnumerable<TypeInfo> services;
 			if (ns != null)
 				services = from t in assembly.DefinedTypes
