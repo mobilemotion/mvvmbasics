@@ -1,5 +1,5 @@
 ﻿/*
- * (c) 2015 Andreas Kuntner
+ * (c) 2015-2018 Andreas Kuntner
  */
 using System;
 using System.Collections.Generic;
@@ -19,21 +19,34 @@ namespace MVVMbasics.CilInjection.NotifyPropertyChangedInjection
 
 		public override bool Execute()
 		{
+			// For the decompiler to access MVVMbasics, we need to copy it to the output dir
+			var toolsDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+			var assemblyDir = Path.GetDirectoryName(AssemblyPath);
+			var libName = "MVVMbasics.dll";
+			var libToolsPath = Path.Combine(toolsDir, libName);
+			var libAssemblyPath = Path.Combine(assemblyDir, libName);
+			var libExists = File.Exists(libAssemblyPath);
+			if (!libExists)
+				File.Copy(libToolsPath, libAssemblyPath);
+
 			// Load assembly
 			ModuleDefinition module;
 			try
 			{
 				var resolver = new DefaultAssemblyResolver();
-				resolver.AddSearchDirectory(Path.GetDirectoryName(AssemblyPath));
+				resolver.AddSearchDirectory(assemblyDir);
 				module = ModuleDefinition.ReadModule(AssemblyPath, new ReaderParameters()
 				{
 					AssemblyResolver = resolver,
-					ReadSymbols = true
+					ReadSymbols = true,
+					ReadWrite = true
 				});
 			}
 			catch (Exception e)
 			{
 				Log.LogError(Resources.Resources.Error_LoadAssembly, AssemblyPath, e.Message);
+				if (!libExists)
+					File.Delete(libAssemblyPath);
 				return false;
 			}
 
@@ -81,11 +94,25 @@ namespace MVVMbasics.CilInjection.NotifyPropertyChangedInjection
 					}
 				}
 			}
+			var result = true;
+
 			// If any operations have been injected, write them to the assembly
 			if (hasChanged)
-				return WriteAssembly(module);
+				result = WriteAssembly(module);
 
-			return true;
+			module.Dispose();
+
+			try
+			{
+				if (!libExists)
+					File.Delete(libAssemblyPath);
+			}
+			catch (IOException)
+			{
+				// File might be locked, doesn't matter
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -401,7 +428,7 @@ namespace MVVMbasics.CilInjection.NotifyPropertyChangedInjection
 			}
 			try
 			{
-				module.Assembly.Write(AssemblyPath, new WriterParameters
+				module.Write(new WriterParameters
 				{
 					WriteSymbols = true
 				});
