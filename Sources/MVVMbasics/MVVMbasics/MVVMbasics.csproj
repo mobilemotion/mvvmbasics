@@ -7,6 +7,10 @@
         <Company>mobilemotion.eu</Company>
         <Copyright>Copyright © Andreas Kuntner 2013-2018</Copyright>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Description />
+        <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
+        <PackageProjectUrl>http://www.mobilemotion.eu/?page_id=726</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mobilemotion/mvvmbasics</RepositoryUrl>
     </PropertyGroup>
     <ItemGroup>
       <Folder Include="Properties\" />

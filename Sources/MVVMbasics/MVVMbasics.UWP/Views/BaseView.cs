@@ -1,5 +1,5 @@
 ﻿/*
- * (c) 2013-2015 Andreas Kuntner
+ * (c) 2013-2018 Andreas Kuntner
  * 
  * some corrections Kristian Walsh
  */

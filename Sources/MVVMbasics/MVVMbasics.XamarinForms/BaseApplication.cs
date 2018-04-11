@@ -1,5 +1,5 @@
 ﻿/*
- * (c) 2013-2016 Andreas Kuntner
+ * (c) 2013-2018 Andreas Kuntner
  */
 
 using MVVMbasics.Views;

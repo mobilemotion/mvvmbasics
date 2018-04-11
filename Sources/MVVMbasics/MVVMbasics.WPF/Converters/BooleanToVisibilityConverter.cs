@@ -1,5 +1,5 @@
 ﻿/*
- * (c) 2014-2015 Andreas Kuntner
+ * (c) 2014-2018 Andreas Kuntner
  */
 
 using System;
