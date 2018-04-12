@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26127.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVVMbasicsTemplatesExtension", "MVVMbasicsTemplatesExtension\MVVMbasicsTemplatesExtension.csproj", "{D638A949-1DE4-4ED4-8F8C-8127587E8EAF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D638A949-1DE4-4ED4-8F8C-8127587E8EAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D638A949-1DE4-4ED4-8F8C-8127587E8EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D638A949-1DE4-4ED4-8F8C-8127587E8EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D638A949-1DE4-4ED4-8F8C-8127587E8EAF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

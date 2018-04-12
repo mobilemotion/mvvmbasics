@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<views:BaseView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:MVVMbasics.Views;assembly=MVVMbasics.XamarinForms"
+             x:Class="MvvmApp.XamarinForms.Views.MainPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Welcome to MVVMbasics!"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+			<Button Command="{Binding SampleCommand}" Text="This is a sample button" />
+		</StackLayout>
+    </ContentPage.Content>
+</views:BaseView>
