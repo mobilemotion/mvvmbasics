@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.5</TargetFramework>
+    <RootNamespace>MVVMbasics</RootNamespace>
+    <Authors>Andreas Kuntner</Authors>
+    <Version>2.4.0</Version>
+    <Company>mobilemotion.eu</Company>
+    <Product>MVVMbasics</Product>
+    <Copyright>Copyright © Andreas Kuntner 2013-2018</Copyright>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
+    <PackageProjectUrl>http://www.mobilemotion.eu/?page_id=726</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mobilemotion/mvvmbasics</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Forms" Version="2.5.1.444934" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MVVMbasics\MVVMbasics.csproj" />
+  </ItemGroup>
+
+</Project>

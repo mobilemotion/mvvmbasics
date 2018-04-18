@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemplatesInstaller", "TemplatesInstaller\TemplatesInstaller.csproj", "{2FA538A8-3388-4C43-8883-EC58D17450AA}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{1CE288A1-4036-4228-95A3-11EB2A7AA13D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2FA538A8-3388-4C43-8883-EC58D17450AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FA538A8-3388-4C43-8883-EC58D17450AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FA538A8-3388-4C43-8883-EC58D17450AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FA538A8-3388-4C43-8883-EC58D17450AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CE288A1-4036-4228-95A3-11EB2A7AA13D}.Debug|Any CPU.ActiveCfg = Debug
+		{1CE288A1-4036-4228-95A3-11EB2A7AA13D}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2097A79F-2633-42C3-9992-C4F187159B51}
+	EndGlobalSection
+EndGlobal

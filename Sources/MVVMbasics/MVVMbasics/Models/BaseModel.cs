@@ -1,10 +1,11 @@
 ﻿/*
- * (c) 2013-2015 Andreas Kuntner
+ * (c) 2013-2018 Andreas Kuntner
  */
 using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using MVVMbasics.Commands;
 
 namespace MVVMbasics.Models
@@ -191,6 +192,53 @@ namespace MVVMbasics.Models
 		/// <param name="dependsOnProperties">List of Properties this Command depends on.</param>
 		/// <returns></returns>
 		protected BaseCommand CreateCommand(Action<object> execute, Expression<Func<object, bool>> canExecute, 
+			params Expression<Func<object>>[] dependsOnProperties)
+		{
+			return new BaseCommand(execute, canExecute, this, dependsOnProperties);
+		}
+
+		/// <summary>
+		/// Creates an asynchronous Command and registers a parameterless method to it.
+		/// </summary>
+		/// <param name="execute">Parameterless method.</param>
+		/// <returns></returns>
+		protected BaseCommand CreateAsyncCommand(Func<Task> execute)
+		{
+			return new BaseCommand(execute);
+		}
+
+        /// <summary>
+        /// Creates an asynchronous Command and registers a method with one parameter of type <c>object</c> to it.
+        /// </summary>
+        /// <param name="execute">Method with one parameter of type <c>object</c>.</param>
+        /// <returns></returns>
+        protected BaseCommand CreateAsyncCommand(Func<object, Task> execute)
+		{
+			return new BaseCommand(execute);
+		}
+
+        /// <summary>
+        /// Creates an asynchronous Command with a <c>CanExecute</c> condition and registers a parameterless method to it.
+        /// </summary>
+        /// <param name="execute">Parameterless method.</param>
+        /// <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
+        /// <param name="dependsOnProperties">List of Properties this Command depends on.</param>
+        /// <returns></returns>
+        protected BaseCommand CreateAsyncCommand(Func<Task> execute, Expression<Func<bool>> canExecute, 
+			params Expression<Func<object>>[] dependsOnProperties)
+		{
+			return new BaseCommand(execute, canExecute, this, dependsOnProperties);
+		}
+
+        /// <summary>
+        /// Creates an asynchronous Command with a <c>CanExecute</c> condition and registers a method with one parameter of type
+        /// <c>object</c> to it.
+        /// </summary>
+        /// <param name="execute">Method with one parameter of type <c>object</c>.</param>
+        /// <param name="canExecute">Condition that defines whether this Command is enabled or not.</param>
+        /// <param name="dependsOnProperties">List of Properties this Command depends on.</param>
+        /// <returns></returns>
+        protected BaseCommand CreateAsyncCommand(Func<object, Task> execute, Expression<Func<object, bool>> canExecute, 
 			params Expression<Func<object>>[] dependsOnProperties)
 		{
 			return new BaseCommand(execute, canExecute, this, dependsOnProperties);

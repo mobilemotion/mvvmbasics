@@ -1,0 +1,31 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>MvvmApp.Core</Name>
+    <Description>
+    </Description>
+    <ProjectType>CSharp</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>MvvmApp.Core</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+	<CreateInPlace>true</CreateInPlace>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="MvvmApp.Core.csproj" File="MvvmApp.Core.csproj" ReplaceParameters="false">
+      <Folder Name="Services" TargetFolderName="Services">
+        <ProjectItem ReplaceParameters="false" TargetFileName="ISamplePlatformspecificService.cs">ISamplePlatformspecificService.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="ISamplePortableService.cs">ISamplePortableService.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="SamplePortableService.cs">SamplePortableService.cs</ProjectItem>
+      </Folder>
+      <Folder Name="Viewmodels" TargetFolderName="Viewmodels">
+        <ProjectItem ReplaceParameters="false" TargetFileName="MainViewmodel.cs">MainViewmodel.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="NavigatorAwareBaseViewmodel.cs">NavigatorAwareBaseViewmodel.cs</ProjectItem>
+      </Folder>
+      <ProjectItem ReplaceParameters="false" TargetFileName="README.txt">README.txt</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

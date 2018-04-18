@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("mobilemotion.eu")]
-[assembly: AssemblyProduct("MVVMbasics.CilInjection.NotifyPropertyChangedInjection")]
-[assembly: AssemblyCopyright("Copyright © Andreas Kuntner 2016")]
+[assembly: AssemblyProduct("MVVMbasics")]
+[assembly: AssemblyCopyright("Copyright © Andreas Kuntner 2015-2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.3.1")]
-[assembly: AssemblyFileVersion("2.3.1")]
+[assembly: AssemblyVersion("2.4.0")]
+[assembly: AssemblyFileVersion("2.4.0")]

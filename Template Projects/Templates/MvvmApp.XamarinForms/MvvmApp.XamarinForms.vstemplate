@@ -1,0 +1,30 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>MvvmApp.XamarinForms</Name>
+    <Description>
+    </Description>
+    <ProjectType>CSharp</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>MvvmApp.XamarinForms</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <CreateInPlace>true</CreateInPlace>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="MvvmApp.XamarinForms.csproj" File="MvvmApp.XamarinForms.csproj" ReplaceParameters="false">
+      <Folder Name="Services" TargetFolderName="Services">
+        <ProjectItem ReplaceParameters="false" TargetFileName="SamplePlatformspecificService.cs">SamplePlatformspecificService.cs</ProjectItem>
+      </Folder>
+      <Folder Name="Views" TargetFolderName="Views">
+        <ProjectItem ReplaceParameters="false" TargetFileName="MainPage.xaml">MainPage.xaml</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="MainPage.xaml.cs">MainPage.xaml.cs</ProjectItem>
+      </Folder>
+      <ProjectItem ReplaceParameters="false" TargetFileName="App.xaml">App.xaml</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="App.xaml.cs">App.xaml.cs</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

@@ -1,0 +1,30 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="ProjectGroup">
+  <TemplateData>
+    <Name>MVVMbasics Multi-Platform Application</Name>
+    <Description>Installs the project templates for working with the MVVMbasics library.</Description>
+    <ProjectType>CSharp</ProjectType>
+    <Icon>__TemplateIcon.ico</Icon>
+  </TemplateData>
+  <TemplateContent>  
+    <ProjectCollection>  
+        <ProjectTemplateLink Name="MvvmApp.Core">  
+            MvvmApp.Core\MvvmApp.Core.vstemplate  
+        </ProjectTemplateLink>  
+        <ProjectTemplateLink Name="MvvmApp.UWP">  
+            MvvmApp.UWP\MvvmApp.UWP.vstemplate  
+        </ProjectTemplateLink>  
+        <ProjectTemplateLink Name="MvvmApp.WPF">  
+            MvvmApp.WPF\MvvmApp.WPF.vstemplate  
+        </ProjectTemplateLink>  
+        <ProjectTemplateLink Name="MvvmApp.XamarinForms">  
+            MvvmApp.XamarinForms\MvvmApp.XamarinForms.vstemplate  
+        </ProjectTemplateLink>  
+        <ProjectTemplateLink Name="MvvmApp.XamarinForms.Android">  
+            MvvmApp.XamarinForms.Android\MvvmApp.XamarinForms.Android.vstemplate  
+        </ProjectTemplateLink>  
+        <ProjectTemplateLink Name="MvvmApp.XamarinForms.iOS">  
+            MvvmApp.XamarinForms.iOS\MvvmApp.XamarinForms.iOS.vstemplate  
+        </ProjectTemplateLink>  
+    </ProjectCollection>  
+</TemplateContent>  
+</VSTemplate>

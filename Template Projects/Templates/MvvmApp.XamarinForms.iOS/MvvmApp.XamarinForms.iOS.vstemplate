@@ -1,0 +1,46 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>MvvmApp.XamarinForms.iOS</Name>
+    <Description>
+    </Description>
+    <ProjectType>CSharp</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>MvvmApp.XamarinForms.iOS</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <CreateInPlace>true</CreateInPlace>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="MvvmApp.XamarinForms.iOS.csproj" File="MvvmApp.XamarinForms.iOS.csproj" ReplaceParameters="false">
+      <ProjectItem ReplaceParameters="false" TargetFileName="AppDelegate.cs">AppDelegate.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Entitlements.plist">Entitlements.plist</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Info.plist">Info.plist</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Main.cs">Main.cs</ProjectItem>
+      <Folder Name="Properties" TargetFolderName="Properties">
+        <ProjectItem ReplaceParameters="false" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+      </Folder>
+      <Folder Name="Resources" TargetFolderName="Resources">
+        <ProjectItem ReplaceParameters="false" TargetFileName="Default-568h@2x.png">Default-568h@2x.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Default-Portrait.png">Default-Portrait.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Default-Portrait@2x.png">Default-Portrait@2x.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Default.png">Default.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Default@2x.png">Default@2x.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Icon-60@2x.png">Icon-60@2x.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Icon-60@3x.png">Icon-60@3x.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Icon-76.png">Icon-76.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Icon-76@2x.png">Icon-76@2x.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Icon-Small-40.png">Icon-Small-40.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Icon-Small-40@2x.png">Icon-Small-40@2x.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Icon-Small-40@3x.png">Icon-Small-40@3x.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Icon-Small.png">Icon-Small.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Icon-Small@2x.png">Icon-Small@2x.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Icon-Small@3x.png">Icon-Small@3x.png</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="LaunchScreen.storyboard">LaunchScreen.storyboard</ProjectItem>
+      </Folder>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

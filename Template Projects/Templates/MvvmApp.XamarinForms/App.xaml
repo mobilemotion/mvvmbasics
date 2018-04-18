@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<mvvmbasics:BaseApplication xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mvvmbasics="clr-namespace:MVVMbasics;assembly=MVVMbasics.XamarinForms"
+             x:Class="MvvmApp.XamarinForms.App">
+	<Application.Resources>
+
+		<!-- Application resource dictionary -->
+
+	</Application.Resources>
+</mvvmbasics:BaseApplication>
